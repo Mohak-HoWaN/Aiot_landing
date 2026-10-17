@@ -100,6 +100,8 @@ These are landing-page checks, not product, camera, physical-phone or inbox test
 
 **Deploy settings for any static host (Cloudflare Pages, Vercel, Netlify, Render Static Site):** build command `npm run dist`, output directory `dist`, Node 18 or newer. `npm run dist` builds the page and copies only the public files into `dist/`, and stops with an error if the page links to a file that is not published. Set the `SITE_URL` environment variable to the real HTTPS address so the canonical and social links are correct. Do not use a "Web Service" type: those sleep when idle on free plans, and this site needs no server.
 
+**Cloudflare (Workers Builds, the screen with three commands):** build command `npm run dist`, deploy command `npx wrangler deploy`, preview (version) command `npx wrangler versions upload`. `wrangler.jsonc` points it at `dist/`; its `name` must equal the project name in Cloudflare. On the older Cloudflare Pages screen use build command `npm run dist` and output directory `dist` instead.
+
 The file list below is what `dist/` contains:
 
 Upload only `index.html`, `styles.css`, `app.js`, `copy.js`, `render.js`, the four `locales/*.js`, `favicon.svg`, `JonaRu-Reimagined.jpeg`, and the five listed `assets/*.png`. Serve JavaScript with the correct MIME type. Do not publish `.qa` or the development repository.

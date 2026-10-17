@@ -1,0 +1,7 @@
+{
+  // Cloudflare: serve the dist/ folder (built by "npm run dist") as a static site. No server code, so nothing sleeps or cold-starts.
+  // "name" must match the project name you give Cloudflare. Use this one, or change it here to match what you typed there.
+  "name": "aiot-landing",
+  "compatibility_date": "2025-10-01",
+  "assets": { "directory": "./dist" }
+}
