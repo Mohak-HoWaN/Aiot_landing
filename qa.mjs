@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { translations } from './copy.js';
 const root=fileURLToPath(new URL('.',import.meta.url));
+const imagesOnly=process.argv.includes('--images-only');
+const previewBase=process.env.PREVIEW_URL || 'http://127.0.0.1:4173';
 const out=resolve(root,'.qa'); await mkdir(out,{recursive:true});
 const browserPath=process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser=spawn(browserPath,['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--disable-background-networking','--disable-extensions','--disable-sync','--remote-debugging-port=9437',`--user-data-dir=${resolve(out,'chrome-profile')}`,'about:blank'],{windowsHide:true,stdio:'ignore'});
@@ -29,7 +31,7 @@ try{
     if(message.method==='Runtime.exceptionThrown')results.consoleErrors.push(message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text);
     if(message.method==='Fetch.requestPaused'){
       const {requestId,request,resourceType}=message.params;
-      if(request.url.startsWith('http://127.0.0.1:4173/')||request.url.startsWith('data:')){await send('Fetch.continueRequest',{requestId});return;}
+      if(request.url.startsWith(previewBase+'/')||request.url.startsWith('data:')){await send('Fetch.continueRequest',{requestId});return;}
       if(request.url.startsWith('https://formsubmit.co/')){
         if(resourceType==='Document')nativeSubmission={method:request.method,body:request.postData};
         if(mode==='network'){await send('Fetch.failRequest',{requestId,errorReason:'Failed'});return;}
@@ -42,15 +44,29 @@ try{
   await send('Page.enable');await send('Runtime.enable');await send('Fetch.enable',{patterns:[{urlPattern:'*'}]});
   const viewport=async(width,height=844)=>send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
   async function ready(){for(let i=0;i<60;i++){if(await evaluate('document.readyState === "complete" && document.querySelector("#language")?.disabled === false'))return;await delay(50);}throw Error('Page did not initialise');}
-  const navigate=async()=>{await send('Page.navigate',{url:'http://127.0.0.1:4173/'});await ready();};
+  const navigate=async()=>{await send('Page.navigate',{url:previewBase+'/'});await ready();};
   const snap=async(name)=>{const r=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(resolve(out,name+'.png'),Buffer.from(r.data,'base64'));};
   await viewport(1366,768);
-  // A designed social card embeds an unchanged real-app screenshot; no invented interface.
+  // Social card uses the labelled enhanced receipt, retaining the original sample values.
   const frame=await send('Page.getFrameTree');
-  await send('Page.setDocumentContent',{frameId:frame.frameTree.frame.id,html:`<!doctype html><html><head><link rel="stylesheet" href="http://127.0.0.1:4173/styles.css"><style>body{width:1200px;height:630px;background:#edf2ff;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;padding:60px;gap:70px}h1{font-size:58px}p{font-size:23px;margin-top:24px}.receipt-detail{width:350px}.eyebrow{font-size:16px;margin-bottom:20px;text-transform:none}.caption{font-size:16px}</style></head><body><div><p class="eyebrow">JonaRu Model-1 · Pilot preparation</p><h1>Your counter,<br>stock and udhaar.<br>Together.</h1><p>A working prototype for small shops.<br>Request a demo.</p></div><div><p class="eyebrow">Real app · Demo data</p><div class="receipt-detail"><img src="http://127.0.0.1:4173/assets/receipt.png"></div><p class="caption">Sample customer and amounts.</p></div></body></html>`});
+  await send('Page.setDocumentContent',{frameId:frame.frameTree.frame.id,html:`<!doctype html><html><head><link rel="stylesheet" href="${previewBase}/styles.css"><style>body{width:1200px;height:630px;background:#edf2ff;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;padding:60px;gap:70px}h1{font-size:58px}p{font-size:23px;margin-top:24px}.receipt-detail{width:350px}.eyebrow{font-size:16px;margin-bottom:20px;text-transform:none}.caption{font-size:16px}</style></head><body><div><p class="eyebrow">JonaRu Model-1 · Pilot preparation</p><h1>Your counter,<br>stock and udhaar.<br>Together.</h1><p>A working prototype for small shops.<br>Request a demo.</p></div><div><p class="eyebrow">Enhanced receipt · Demo data</p><div class="receipt-detail"><img src="${previewBase}/assets/receipt-enhanced.png"></div><p class="caption">AI-enhanced capture. Sample amounts.</p></div></body></html>`});
   await viewport(1200,630);await evaluate('Promise.all([...document.images].map(i=>i.decode().catch(()=>{})))');await delay(100);
   const social=await send('Page.captureScreenshot',{format:'png'});await writeFile(resolve(root,'assets/social-preview.png'),Buffer.from(social.data,'base64'));
   await viewport(1366,768);await navigate();await delay(1800);await snap('desktop-hero');
+  if(imagesOnly){
+    for(const width of [1366,390]){
+      await viewport(width,844);await evaluate("window.scrollTo({top:0,behavior:'instant'})");
+      await delay(100);await snap(`images-${width}-hero`);
+      await evaluate("document.querySelectorAll('.feature-band')[1].scrollIntoView({behavior:'instant',block:'start'})");
+      await evaluate('Promise.all([...document.querySelectorAll(".capture-1 img,.receipt-detail img")].map(i=>i.decode()))');
+      await delay(100);await snap(`images-${width}-stock`);
+      const result=await evaluate(`(()=>{const i=document.querySelector('.capture-1 img'),r=document.querySelector('.receipt-detail img');return {overflow:document.documentElement.scrollWidth>innerWidth,invoice:i.naturalWidth,receipt:r.naturalWidth,invoiceVisible:i.getBoundingClientRect().height<=i.parentElement.getBoundingClientRect().height+2}})()`);
+      assert.ok(!result.overflow && result.invoice===1536 && result.receipt===1153 && result.invoiceVisible,JSON.stringify(result));
+      results.layouts.push({width,...result});
+    }
+    await writeFile(resolve(out,'image-results.json'),JSON.stringify(results,null,2));
+    console.log('Image preview checks passed at 1366 and 390 px; social preview refreshed.');
+  } else {
   for(const width of [1366,768,390,320]){
     await viewport(width,width===1366?768:844);
     for(const lang of ['en','gu','hi','mr']){
@@ -119,7 +135,7 @@ try{
   check('Fresh load resets to English',await evaluate("document.documentElement.lang==='en'"));
   check('Reduced motion shows static final demo',await evaluate("document.querySelector('#demo-total').textContent==='₹10' && document.getAnimations().filter(a=>a.playState==='running').length===0"));
   // No JavaScript: English content and the native POST remain usable.
-  await send('Emulation.setScriptExecutionDisabled',{value:true});await send('Page.navigate',{url:'http://127.0.0.1:4173/'});await delay(200);
+  await send('Emulation.setScriptExecutionDisabled',{value:true});await send('Page.navigate',{url:previewBase+'/'});await delay(200);
   check('No-JS English problems, steps, features and FAQ present',await evaluate("document.querySelectorAll('.problem-grid article').length===4 && document.querySelectorAll('.steps article').length===3 && document.querySelectorAll('.feature-band').length===3 && document.querySelectorAll('.faq-list details').length===11"));
   mode='success';await evaluate(`(()=>{const f=document.querySelector('#pilot-form');f.elements['Owner name'].value='Demo';f.elements['Shop name'].value='Demo Shop';f.elements.Phone.value='9876543210';f.elements.City.value='Ahmedabad';f.elements['Contact consent'].checked=true;f.querySelector('[type=submit]').click();})()`);await delay(250);
   check('No-JS form performs native POST (intercepted, not sent)',nativeSubmission?.method==='POST');
@@ -129,5 +145,6 @@ try{
   await writeFile(resolve(out,'results.json'),JSON.stringify(results,null,2));
   console.log(JSON.stringify({checks:results.checks.length,layoutCount:results.layouts.length,overflow:results.layouts.filter(x=>x.scrollWidth>x.width||x.overflow.length),tiny:results.layouts.filter(x=>x.tiny.length),consoleErrors:results.consoleErrors,output:out},null,2));
   assert.ok(results.layouts.every(r=>r.scrollWidth<=r.width && r.tiny.length===0),'Layout overflow or tiny text');
+  }
 }catch(error){await writeFile(resolve(out,'results.json'),JSON.stringify(results,null,2));console.error(error);process.exitCode=1;}
 finally{try{await send('Browser.close');}catch{}socket?.close();browser.kill();}

@@ -2,7 +2,7 @@ export default {
   signatureLabel: 'Simulated camera-to-bill sequence', signatureCamera: 'Camera', signatureBill: 'Sample bill',
   skip: 'Skip to content', navigation: 'Main navigation', navHow: 'How it works', navFeatures: 'Features', navOwners: 'For shop owners', navFaq: 'FAQ', language: 'Page language', menu: 'Open or close menu', request: 'Request a demo',
   badge: 'Pilot preparation', headline: 'One simple app for your counter, stock and udhaar.', intro: 'For kirana and snack shops. JonaRu Model-1 brings billing, deliveries and customer credit together, with a camera to help.', heroDetail: 'The camera recognises six packaged snacks today. You review every bill and tap in other products.', seeDemo: 'See how a bill is made', prototype: 'A working prototype. Not yet used in a shop.',
-  realApp: 'Real app · Demo data', heroCaption: 'A receipt from the working app, recorded on udhaar. Sample customer and amounts.', screenshotLanguage: 'App screenshots are in English. This selector changes the website only.', receiptAlt: 'Receipt in the real JonaRu app for a sample Oreo sale on customer credit', imageOpen: 'View full capture',
+  realApp: "Enhanced receipt · Demo data", screenshotLanguage: 'App screenshots are in English. This selector changes the website only.', receiptAlt: "Enhanced JonaRu receipt preview with the original sample Oreo sale and udhaar details", imageOpen: 'View full capture',
   strengths: ['Billing, stock and udhaar together', 'Every bill stays in your hands', 'Vendor bills become stock drafts'],
   problemLabel: 'The everyday counter', problemTitle: 'A shop is more than a bill.', problemIntro: 'The small jobs that follow you through the day.',
   problems: [
@@ -33,7 +33,7 @@ export default {
       ['Vendor deliveries', 'Record packs, cost, selling price, batch, expiry and supplier credit — money you owe the vendor.'],
       ['Stock and write-offs', 'See low stock and activity. Write off expired, damaged or lost items at cost.'],
       ['Expiry and reorders', 'Check approximate batch expiry and a suggested order list grouped by vendor. Copy the list for WhatsApp.']
-    ], caption: 'Real app · Sample English invoice. Imported values need review before saving.', alt: 'Real receive-stock form filled from a synthetic English invoice' },
+    ], caption: "AI-enhanced excerpt · Sample English invoice. First two rows shown. Review imported values before saving.", alt: "Enhanced receive-stock preview showing the first two sample invoice rows: Center Fruit and PopRings" },
     { title: 'Understanding sales', lead: 'Close the day with a clearer picture.', items: [
       ['Daily reports', 'See sales, cash, UPI and udhaar totals, products sold and a CSV download.'],
       ['Profit view', 'Profit uses the recorded cost of each sold item. Items without a cost are excluded and counted.'],

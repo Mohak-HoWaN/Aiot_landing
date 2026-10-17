@@ -63,15 +63,15 @@ Integration reference: [official FormSubmit documentation](https://formsubmit.co
 
 ## Asset provenance
 
-Existing review captures were copied read-only from the reviewer's temporary output. **No shop test script ran and no database was accessed.** PNGs are unchanged; CSS frames relevant portions. No AI recreation or fabricated interface is used.
+Existing review captures were copied read-only from the reviewer's temporary output. **No shop test script ran and no database was accessed.** At the owner's request, the receipt and Receive Stock images now use clearly labelled AI-enhanced derivatives. Sample financial values were preserved; the invoice excerpt shows only the first two rows. Original captures remain locally. See `assets/IMAGE-NOTES.md` for provenance and prompt details.
 
 | File | Original capture | Context |
 | --- | --- | --- |
-| `assets/receipt.png` | `1-udhaar-receipt.png` | Hero frames the receipt. Original capture includes a blocked-camera panel, so this is not evidence of recognition. Synthetic customer `UI Customer` and sample amount. |
+| `assets/receipt-enhanced.png` | Enhanced from `1-udhaar-receipt.png` | Sharp receipt-only preview with the original sample customer and amounts. The original `receipt.png` includes a blocked camera; neither image establishes recognition performance. |
 | `assets/udhaar.png` | `3-udhaar-page.png` | Settled sample customer's credit page. |
-| `assets/invoice.png` | `2-photo-imported.png` | Real form filled from a synthetic English invoice. Sample vendor, not a real vendor trial. |
+| `assets/invoice-short.png` | Enhanced from `2-photo-imported.png` | Two complete sample rows, retaining their costs/prices/margins. Later rows omitted. Original retained as `invoice.png`. |
 | `assets/reports.png` | `4-reports.png` | Frame shows sales/profit summary. Full capture includes camera-correction tiles; all are synthetic records, not recognition-performance evidence. |
-| `assets/social-preview.png` | Local HTML composition rendered by `qa.mjs` | Unchanged receipt detail, branding and explicit demo-data label. |
+| `assets/social-preview.png` | Local HTML composition rendered by `qa.mjs` | Enhanced receipt, branding and explicit enhancement/demo-data label. |
 
 `JonaRu-Reimagined.jpeg` is the original AI concept. Its imagined fruit recognition, sensors, enclosure and screen specifications are not built features. No older fruit demo video is used.
 
@@ -97,6 +97,10 @@ The final browser run passed **39 interaction assertions** and covered all four 
 These are landing-page checks, not product, camera, physical-phone or inbox tests. Native-speaker review and live form delivery remain outstanding. Product tests were not rerun.
 
 ## Static hosting
+
+**Deploy settings for any static host (Cloudflare Pages, Vercel, Netlify, Render Static Site):** build command `npm run dist`, output directory `dist`, Node 18 or newer. `npm run dist` builds the page and copies only the public files into `dist/`, and stops with an error if the page links to a file that is not published. Set the `SITE_URL` environment variable to the real HTTPS address so the canonical and social links are correct. Do not use a "Web Service" type: those sleep when idle on free plans, and this site needs no server.
+
+The file list below is what `dist/` contains:
 
 Upload only `index.html`, `styles.css`, `app.js`, `copy.js`, `render.js`, the four `locales/*.js`, `favicon.svg`, `JonaRu-Reimagined.jpeg`, and the five listed `assets/*.png`. Serve JavaScript with the correct MIME type. Do not publish `.qa` or the development repository.
 

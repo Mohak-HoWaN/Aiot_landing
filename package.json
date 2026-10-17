@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "build": "node build.mjs", "start": "node build.mjs && node server.mjs", "dev": "node build.mjs && node server.mjs", "check": "node check.mjs", "check:browser": "node qa.mjs" },
+  "scripts": { "build": "node build.mjs", "dist": "node build.mjs && node publish.mjs", "start": "node build.mjs && node server.mjs", "dev": "node build.mjs && node server.mjs", "check": "node check.mjs", "check:browser": "node qa.mjs" },
   "engines": { "node": ">=18" }
 }

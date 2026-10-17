@@ -13,8 +13,8 @@ Updated 2026-10-17. The main improvements below are implemented inside `landing/
 
 ### Real evidence
 
-- Hero receipt detail from the real app, visibly labelled demo data.
-- Larger real udhaar, synthetic-invoice-import and report captures replace tiny decorative screens. Full-size feature links.
+- Hero receipt detail enhanced for clarity from the real app capture, visibly labelled as enhanced and using demo data.
+- Larger udhaar, synthetic-invoice-import and report captures replace tiny decorative screens. Receive Stock now shows a labelled enhanced excerpt of just the first two rows, retaining original values. Full-size feature links open the displayed versions.
 - Screens stay in English; sample records do not prove recognition accuracy, real-invoice reliability or shop trials.
 - Original AI concept is below the fold behind a disclosure, with imagined hardware/fruit details expressly unbuilt.
 - Social preview uses the real receipt. Actual domain remains needed for canonical and absolute OG URLs.
