@@ -22,7 +22,7 @@ Updated 2026-10-17. The main improvements below are implemented inside `landing/
 ### Motion and interaction
 
 - Separate camera → recognition → sample bill motif plays once, has Replay and stops offscreen. The real screenshot is not animated or presented as a recording.
-- Checkout simulation: all six products, optional drag, movement buttons, keyboard actions, quantity correction, manual unknown-product entry and sample udhaar.
+- Checkout simulation: six matching packet photos, optional drag, movement buttons, keyboard actions, quantity correction and manual unknown-product entry. Make bill opens cash/UPI choices. Cash confirms immediately; UPI shows a clearly labelled illustrative QR for three seconds before confirmation. Cart edits and replay cancel pending confirmation. This is a simulated payment flow; no money is collected or verified.
 - Larger counter on the right to smaller billed area on the left. Clearly labelled simulation; example prices are not real product or pilot prices.
 - Recognition/scan/bill sequence, replay, subtle bill entry, section reveals and scroll progress. Transform/opacity motion, native scrolling, no permanent loops.
 - Reduced motion removes animation and shows a final static scene. Interactive buttons remain usable.

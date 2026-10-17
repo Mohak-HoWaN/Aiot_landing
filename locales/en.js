@@ -1,4 +1,15 @@
 export default {
+  makeBill: "Make bill",
+  choosePayment: "How would you like to pay?",
+  payCash: "Pay by cash",
+  payUpi: "Pay by UPI",
+  demoQr: "Demo QR",
+  qrWait: "Showing demo QR for 3 seconds…",
+  qrAlt: "Illustrative demo QR. Not a payment code.",
+  paymentReceived: "Payment received",
+  cashReceived: "Cash received",
+  upiReceived: "UPI payment received",
+  paymentDisclaimer: "Simulated payment only. No money is collected. JonaRu records payments; it does not verify them.",
   signatureLabel: 'Simulated camera-to-bill sequence', signatureCamera: 'Camera', signatureBill: 'Sample bill',
   skip: 'Skip to content', navigation: 'Main navigation', navHow: 'How it works', navFeatures: 'Features', navOwners: 'For shop owners', navFaq: 'FAQ', language: 'Page language', menu: 'Open or close menu', request: 'Request a demo',
   badge: 'Pilot preparation', headline: 'One simple app for your counter, stock and udhaar.', intro: 'For kirana and snack shops. JonaRu Model-1 brings billing, deliveries and customer credit together, with a camera to help.', heroDetail: 'The camera recognises six packaged snacks today. You review every bill and tap in other products.', seeDemo: 'See how a bill is made', prototype: 'A working prototype. Not yet used in a shop.',
@@ -17,7 +28,7 @@ export default {
     ['Cross the line to add it.', 'Moving it across the billing line adds it; moving it back removes it. Anything else you tap in by hand.'],
     ['Review, record, print.', 'Check the bill, record cash, UPI or udhaar, and print a receipt. Stock updates when you save.']
   ],
-  demoLabel: 'Simulated demo. Not the live camera.', demoTitle: 'Try a bill. Then change your mind.', demoHint: 'Drag the pack across the line or use the buttons. Prices and customer names here are examples.', chooseProduct: 'Choose a supported product', desk: 'Counter', billed: 'On the bill', line: 'Billing line', drag: 'Drag the product across the billing line', add: 'Move to bill', back: 'Move back', replay: 'Replay', manual: 'Try an unknown product', manualItem: 'Example shop item', manualHint: 'The camera does not know this item. Tap it onto the bill.', manualAdd: 'Add manually', credit: 'Put on udhaar', creditNote: 'Recorded for Demo Customer · sample only', currentBill: 'Your sample bill', empty: 'Your next item starts here.', total: 'Total', remove: 'Remove one', ready: 'Move a supported product from the counter to the bill.', added: 'Item added. You can correct the bill below.', removed: 'Item removed. You stay in control.', corrected: 'Quantity corrected by the cashier.', manualAdded: 'Unknown product added by hand.', creditDone: 'Sample bill put on Demo Customer’s udhaar.', detected: 'Recognised', simulationNoJs: 'Enable JavaScript to try the simulated checkout. The steps above explain the workflow.',
+  demoLabel: 'Simulated demo. Not the live camera.', demoTitle: 'Try a bill. Then change your mind.', demoHint: "Drag the pack across the line or use the buttons. Then make a bill and try a simulated cash or UPI payment. Prices are examples.", chooseProduct: 'Choose a supported product', desk: 'Counter', billed: 'On the bill', line: 'Billing line', drag: 'Drag the product across the billing line', add: 'Move to bill', back: 'Move back', replay: 'Replay', manual: 'Try an unknown product', manualItem: 'Example shop item', manualHint: 'The camera does not know this item. Tap it onto the bill.', manualAdd: 'Add manually', currentBill: 'Your sample bill', empty: 'Your next item starts here.', total: 'Total', remove: 'Remove one', ready: 'Move a supported product from the counter to the bill.', added: 'Item added. You can correct the bill below.', removed: 'Item removed. You stay in control.', corrected: 'Quantity corrected by the cashier.', manualAdded: 'Unknown product added by hand.', detected: 'Recognised', simulationNoJs: 'Enable JavaScript to try the simulated checkout. The steps above explain the workflow.',
   featuresLabel: 'Through the shop day', featuresTitle: 'From a delivery to the day’s accounts.', featuresIntro: 'Working software for everyday shop tasks. These captures use demo data, not a real shop’s records.',
   bands: [
     { title: 'At the counter', lead: 'Make the bill. Keep the relationship.', items: [

@@ -19,7 +19,7 @@ Open **http://127.0.0.1:4173**. `npm start` validates all four dictionaries, gen
 - Real-app receipt detail in the hero, with demo-data disclosure. The unbuilt hardware concept is smaller, below the fold, behind an explicit disclosure.
 - Four kirana situations, three workflow steps and counter / stock / sales feature bands. Udhaar, returns, loose items, write-offs, profit and reorders are included.
 - Real udhaar, invoice and report captures replace invented mini interfaces. Full captures open separately. Screens stay in English and are labelled as samples.
-- Separate camera-to-bill hero motif, played once with replay. Simulated checkout supports six products, dragging, keyboard/button movement, correction, manual entry and sample udhaar.
+- Separate camera-to-bill hero motif, played once with replay. Simulated checkout supports six product photos, dragging, keyboard/button movement, correction and manual entry. Make bill offers cash/UPI choices in an overlay within the existing sample bill: cash shows an animated confirmation; UPI shows a labelled demo QR for three seconds before confirmation. Confirmation stays for two seconds, fades out and reveals the bill. No extra section height or restart button. No real payment is made or verified. Editing the bill cancels the payment preview. Reduced motion shows a static confirmation.
 - Working / sample-tested / next status board. Internet, hardware, payments, training, data handling, pricing and GST limits are explicit.
 - 16 px body, 14 px secondary, minimum 12 px labels. System fonts, native scrolling, no animation loops. Reduced motion shows final static scenes.
 - English on every fresh load; Gujarati, Hindi and Marathi translations. Language changes preserve form values and independently selected contact language.
@@ -104,7 +104,7 @@ These are landing-page checks, not product, camera, physical-phone or inbox test
 
 The file list below is what `dist/` contains:
 
-Upload only `index.html`, `styles.css`, `app.js`, `copy.js`, `render.js`, the four `locales/*.js`, `favicon.svg`, `JonaRu-Reimagined.jpeg`, and the five listed `assets/*.png`. Serve JavaScript with the correct MIME type. Do not publish `.qa` or the development repository.
+Upload only `index.html`, `styles.css`, `app.js`, `copy.js`, `render.js`, the four `locales/*.js`, `favicon.svg`, `JonaRu-Reimagined.jpeg`, the five listed `assets/*.png`, `assets/demo-qr.svg`, and the six `assets/products/*.jpg` packet photos. The QR is an illustrative SVG with a DEMO centre label; it contains no payment address. Serve JavaScript with the correct MIME type. Do not publish `.qa` or the development repository.
 
 No public domain was supplied. OG image is relative for local work. Canonical and absolute social URLs are built only with the actual HTTPS page URL:
 

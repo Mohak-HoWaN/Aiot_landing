@@ -7,7 +7,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 let language = 'en';
 const t = key => translations[language][key];
 let formState = '', sending = false;
-let selected = 5, crossed = false, credit = false, demoMessage = 'ready';
+const productImages = ['chataka-pataka', 'poprings', 'dairy-milk', 'center-fruit', 'kitkat', 'oreo'];
+let selected = 5, crossed = false, demoMessage = 'ready';
+let paymentState = 'idle', paymentMethod = '', paymentTimer;
 const quantities = new Map();
 let played = false, playing = false, timers = [];
 
@@ -35,6 +37,13 @@ function cancelSequence() {
 function updateDemo() {
   $('#demo-select').value = String(selected);
   $('#pack-name').textContent = products[selected];
+  const image = $('#pack-image');
+  const src = './assets/products/' + productImages[selected] + '.jpg';
+  if (image.getAttribute('src') !== src) image.src = src;
+  image.alt = products[selected];
+  image.parentElement.dataset.product = productImages[selected];
+  $('#demo-pack').dataset.product = productImages[selected];
+  $('#demo-pack').setAttribute('aria-label', t('drag') + ': ' + products[selected]);
   $('#demo-pack').classList.toggle('is-crossed', crossed);
   $('#demo-pack').setAttribute('aria-pressed', String(crossed));
   $('#demo-add').disabled = crossed;
@@ -42,25 +51,25 @@ function updateDemo() {
   const rows = [...quantities].filter(([,qty])=>qty>0);
   $('#bill-rows').innerHTML = rows.length ? rows.map(([id,qty]) => `<div class="bill-row"><span>${escape(id===6?t('manualItem'):products[id])}<small>× ${qty}</small></span><strong>₹${qty*10}</strong><button type="button" data-remove="${id}" aria-label="${escape(t('remove'))}: ${escape(id===6?t('manualItem'):products[id])}">−</button></div>`).join('') : `<p class="empty-bill">${escape(t('empty'))}</p>`;
   $('#demo-total').textContent = `₹${rows.reduce((sum,[,qty])=>sum+qty*10,0)}`;
-  $('#demo-credit').disabled = !rows.length || credit;
-  $('#credit-note').hidden = !credit;
+  $('#demo-make-bill').disabled = !rows.length;
+  updatePayment();
   $('#demo-message').textContent = t(demoMessage);
 }
 function move(toBill, automatic = false) {
   if (!automatic) { cancelSequence(); played = true; }
   if (toBill !== crossed) {
     quantities.set(selected, Math.max(0,(quantities.get(selected)||0)+(toBill?1:-1)));
-    crossed = toBill; credit = false; demoMessage = toBill?'added':'removed';
+    crossed = toBill; resetPayment(); demoMessage = toBill?'added':'removed';
   }
   $('#demo-pack').classList.toggle('is-recognised', toBill);
   updateDemo();
 }
 function finalFrame() {
-  cancelSequence(); quantities.clear(); selected = 5; crossed = false; credit = false;
+  cancelSequence(); quantities.clear(); crossed = false; resetPayment();
   move(true,true); played = true;
 }
 function replay() {
-  cancelSequence(); played = true; selected = 5; crossed = false; credit = false; quantities.clear();
+  cancelSequence(); played = true; crossed = false; resetPayment(); quantities.clear();
   $('#manual-panel').hidden = true; $('#demo-pack').classList.remove('is-recognised');
   demoMessage = 'ready'; updateDemo();
   if (reduced.matches || document.hidden) { finalFrame(); return; }
@@ -73,7 +82,7 @@ $('#demo-add').addEventListener('click',()=>move(true));
 $('#demo-back').addEventListener('click',()=>move(false));
 $('#replay').addEventListener('click',replay);
 $('#demo-select').addEventListener('change',event=>{
-  cancelSequence(); played = true; selected = Number(event.target.value); crossed = false;
+  cancelSequence(); resetPayment(); played = true; selected = Number(event.target.value); crossed = false;
   $('#demo-pack').classList.remove('is-recognised'); demoMessage = 'ready'; updateDemo();
 });
 $('#bill-rows').addEventListener('click',event=>{
@@ -81,13 +90,53 @@ $('#bill-rows').addEventListener('click',event=>{
   cancelSequence(); played = true;
   const id = Number(button.dataset.remove); quantities.set(id,Math.max(0,(quantities.get(id)||0)-1));
   if(id===selected) {crossed=false; $('#demo-pack').classList.remove('is-recognised');}
-  credit=false; demoMessage='corrected'; updateDemo();
+  resetPayment(); demoMessage='corrected'; updateDemo();
   // Preserve a useful focus location when the last row disappears.
   ($(`[data-remove="${id}"]`) || $('#demo-add')).focus({preventScroll:true});
 });
 $('#demo-manual').addEventListener('click',()=>{cancelSequence(); played=true; $('#manual-panel').hidden=false; $('#manual-add').focus({preventScroll:true});});
-$('#manual-add').addEventListener('click',()=>{quantities.set(6,(quantities.get(6)||0)+1); credit=false; demoMessage='manualAdded';updateDemo();});
-$('#demo-credit').addEventListener('click',()=>{cancelSequence();played=true;credit=true;demoMessage='creditDone';updateDemo();});
+$('#manual-add').addEventListener('click',()=>{quantities.set(6,(quantities.get(6)||0)+1); resetPayment(); demoMessage='manualAdded';updateDemo();});
+function resetPayment() {
+  clearTimeout(paymentTimer); paymentState = 'idle'; paymentMethod = '';
+  $('#demo-payment').classList.remove('is-leaving');
+}
+function updatePayment() {
+  const active = paymentState !== 'idle';
+  $('.demo-bill').classList.toggle('is-paying', active);
+  for (const child of $('.demo-bill').children) {
+    if (child.id !== 'demo-payment') child.inert = active;
+  }
+  $('#demo-payment').hidden = paymentState === 'idle';
+  $('#payment-choices').hidden = paymentState !== 'choose';
+  $('#payment-qr').hidden = paymentState !== 'upi';
+  $('#payment-success').hidden = paymentState !== 'paid';
+  $('#payment-method').textContent = paymentMethod ? t(paymentMethod === 'cash' ? 'cashReceived' : 'upiReceived') : '';
+}
+function receivePayment(method) {
+  const focusPayment = $('#demo-payment').contains(document.activeElement);
+  clearTimeout(paymentTimer); paymentMethod = method; paymentState = 'paid';
+  demoMessage = 'paymentReceived'; updateDemo();
+  if (focusPayment) $('#payment-success').focus({preventScroll:true});
+  paymentTimer = setTimeout(()=>{
+    $('#demo-payment').classList.add('is-leaving');
+    paymentTimer = setTimeout(()=>{
+      const restoreFocus = $('#demo-payment').contains(document.activeElement);
+      resetPayment(); updateDemo();
+      if (restoreFocus) $('#demo-make-bill').focus({preventScroll:true});
+    }, reduced.matches ? 0 : 250);
+  }, 2000);
+}
+$('#demo-make-bill').addEventListener('click',()=>{
+  if (![...quantities.values()].some(qty=>qty>0)) return;
+  cancelSequence(); played = true; resetPayment(); paymentState = 'choose';
+  demoMessage = 'choosePayment'; updateDemo(); $('#pay-cash').focus({preventScroll:true});
+});
+$('#pay-cash').addEventListener('click',()=>{if(paymentState === 'choose')receivePayment('cash');});
+$('#pay-upi').addEventListener('click',()=>{
+  if(paymentState !== 'choose')return;
+  paymentState = 'upi'; demoMessage = 'qrWait'; updateDemo(); $('#payment-qr').focus({preventScroll:true});
+  paymentTimer = setTimeout(()=>{if(paymentState === 'upi')receivePayment('upi');},3000);
+});
 
 let drag = null, suppressClick = false;
 const pack = $('#demo-pack'), scene = $('#counter-scene');
