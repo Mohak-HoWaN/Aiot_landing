@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2' };
-const allowed = new Set(['index.html', 'styles.css', 'app.js', 'copy.js', 'render.js', 'favicon.svg', 'JonaRu-Reimagined.jpeg', 'locales/en.js', 'locales/hi.js', 'locales/gu.js', 'locales/mr.js', 'assets/receipt-enhanced.png', 'assets/udhaar.png', 'assets/invoice-short.png', 'assets/reports.png', 'assets/social-preview.png', 'assets/demo-qr.svg', 'assets/products/chataka-pataka.jpg', 'assets/products/poprings.jpg', 'assets/products/dairy-milk.jpg', 'assets/products/center-fruit.jpg', 'assets/products/kitkat.jpg', 'assets/products/oreo.jpg']);
+const allowed = new Set(['index.html', 'styles.css', 'app.js', 'copy.js', 'render.js', 'favicon.svg', 'JonaRu-Reimagined.jpeg', 'locales/en.js', 'locales/hi.js', 'locales/gu.js', 'locales/mr.js', 'assets/receipt.png', 'assets/udhaar.png', 'assets/invoice.png', 'assets/reports.png', 'assets/social-preview.png', 'assets/demo-qr.svg', 'assets/products/chataka-pataka.jpg', 'assets/products/poprings.jpg', 'assets/products/dairy-milk.jpg', 'assets/products/center-fruit.jpg', 'assets/products/kitkat.jpg', 'assets/products/oreo.jpg']);
 const server = http.createServer(async (request, response) => {
   try {
     if (!['GET', 'HEAD'].includes(request.method)) {

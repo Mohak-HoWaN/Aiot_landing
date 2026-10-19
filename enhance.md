@@ -1,23 +1,23 @@
 # JonaRu Model-1 — enhancement handoff
 
-Updated 2026-10-17. The main improvements below are implemented inside `landing/`. `README.md` covers preview, files, assets, form activation and verification limits.
+Updated 2026-10-19. `AUDIT.md` supersedes historical test counts and the older page structure below. The main improvements below are implemented inside `landing/`. `README.md` covers preview, files, assets, form activation and verification limits.
 
 ## Implemented
 
 ### Branding and conversion
 
 - Practical hero: counter, stock and udhaar in one app. Names kirana/snack shops and the six-product recognition limit.
-- **Request a demo** replaces booking language. Nav, hero and form actions; a compact mobile bar helps later in the page.
+- **Request a Pilot Demo** replaces booking language. Nav, hero and form actions; a compact mobile bar helps later in the page.
 - Working-prototype/no-shop-trial disclosure. No fabricated reviews, results, scarcity, prices or availability.
-- Three strengths, four shop situations, grouped features and concise FAQs. Added udhaar, returns, loose items, write-offs, profit and reorders. Supplier credit is clearly distinguished.
+- Demo directly after the hero, three workflow groups, consolidated readiness/privacy and concise FAQs. Added udhaar, returns, loose items, write-offs, profit and reorders. Supplier credit is clearly distinguished.
 
 ### Real evidence
 
-- Hero receipt detail enhanced for clarity from the real app capture, visibly labelled as enhanced and using demo data.
-- Larger udhaar, synthetic-invoice-import and report captures replace tiny decorative screens. Receive Stock now shows a labelled enhanced excerpt of just the first two rows, retaining original values. Full-size feature links open the displayed versions.
+- Hero uses the original app receipt, framed in CSS and labelled as demo data. Generated receipt artwork is excluded from publication.
+- Larger udhaar, synthetic-invoice-import and report captures replace tiny decorative screens. Receive Stock shows the first two rows of the original capture, with a demo-data caption and unchanged values. Full-size feature links open the displayed versions.
 - Screens stay in English; sample records do not prove recognition accuracy, real-invoice reliability or shop trials.
 - Original AI concept is below the fold behind a disclosure, with imagined hardware/fruit details expressly unbuilt.
-- Social preview uses the real receipt. Actual domain remains needed for canonical and absolute OG URLs.
+- Social preview uses the real receipt. Canonical and absolute OG URLs default to the supplied Cloudflare domain.
 
 ### Motion and interaction
 
@@ -41,7 +41,7 @@ Updated 2026-10-17. The main improvements below are implemented inside `landing/
 
 Isolated headless Chrome checked four languages at 320, 390, 768 and 1366 px, including 1366×768 and 390×844 hero views. No horizontal overflow or HTML text below 12 px. Keyboard menu/FAQ, demo controls, form preservation, reduced motion, mobile bar and no-JS content/native POST checked. Service success/failure/verification/network responses were intercepted and mocked; nothing sent to FormSubmit.
 
-The final run passed 39 interaction assertions, including pointer dragging both ways, all six product choices, arrow-key movement and required/phone/email validation in each language. Exact assertions and screenshots are in ignored `.qa/`. No product tests, database mutations, physical-phone checks or inbox delivery checks are implied. Native-speaker review is still needed.
+The 2026-10-19 final run passed 70 assertions, including pointer and touch dragging, all six product photos, tracked-product state, keyboard controls, payment timing and cancellation, accessible names/headings, four-language validation, timeout handling and no-JS submission fallback. Exact assertions and screenshots are in ignored `.qa/`; `AUDIT.md` records the comparison and limits. No product tests, database mutations, physical-phone checks or inbox delivery checks are implied. Native-speaker review is still needed.
 
 ## Good additions when evidence is available
 
