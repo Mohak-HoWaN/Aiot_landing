@@ -10,8 +10,9 @@ html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
 for (const [key, value] of Object.entries(sections(en))) html = html.replace(`<!-- section:${key} -->`, value);
 html = html.replace('<!-- product-options -->', products.map((p,i)=>`<option value="${i}"${i===5?' selected':''}>${escape(p)}</option>`).join(''));
 // Add absolute social/canonical URLs only after the owner supplies a real public URL.
-if (process.env.SITE_URL) {
-  const base = new URL(process.env.SITE_URL.endsWith('/') ? process.env.SITE_URL : process.env.SITE_URL + '/');
+const siteUrl = process.env.SITE_URL || 'https://aiot.shahonthefloor.workers.dev/';
+if (siteUrl) {
+  const base = new URL(siteUrl.endsWith('/') ? siteUrl : siteUrl + '/');
   if (base.protocol !== 'https:') throw new Error('SITE_URL must use HTTPS');
   html = html.replace('<!-- hosting-meta -->', `<link rel="canonical" href="${escape(base.href)}"><meta property="og:url" content="${escape(base.href)}">`)
     .replace('content="./assets/social-preview.png"', `content="${escape(new URL('assets/social-preview.png', base).href)}"`);

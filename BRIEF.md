@@ -1,6 +1,6 @@
 # JonaRu Model-1 — current landing brief
 
-Updated 2026-10-17. Supersedes the earlier brief. Brand: **JonaRu**, including visual styling. Work only in `landing/`.
+Updated 2026-10-19 after the live-page and repository audit. Brand: **JonaRu**, including visual styling. Work only in `landing/`. See `AUDIT.md` for evidence, results and remaining confirmations.
 
 ## Audience and action
 
@@ -8,7 +8,7 @@ Primary: kirana and snack-shop owners considering a demo. Secondary: college/SSI
 
 Positioning: **One simple app for your counter, stock and udhaar.** The camera attracts attention; connected shop workflows explain daily value. Plain practical copy, white/blue palette, real evidence, readable type and purposeful motion.
 
-Action: **Request a demo**. Pilot terms, eligibility, duration, installation, support and pricing are unknown. Do not imply a booked appointment, available deployment, free pilot or purchase commitment. Contact: `howan.ms.tc@gmail.com`.
+Action: **Request a Pilot Demo**. Pilot terms, eligibility, duration, installation, support and pricing are unknown. Do not imply a booked appointment, available deployment, free pilot or purchase commitment. Contact: `howan.ms.tc@gmail.com`.
 
 ## Product truth
 
@@ -35,16 +35,14 @@ Source basis: owner's 2026-10-16 code-referenced handoff, project handoff/stock-
 
 ## Page order
 
-1. Navbar, language and demo request.
-2. Shop-value hero, real receipt and separate labelled simulation motif.
-3. Four small-shop situations.
-4. Three checkout steps and interactive simulated bill.
-5. Counter / stock / sales feature bands with real sample captures.
-6. Shop-owner invitation, hardware/connectivity needs and data flow.
-7. Working / sample-tested / next board, six names, training/non-affiliation notes, expandable future concept.
-8. Plain FAQ, including real decision limits.
-9. Demo form, next steps, contact and data disclosure.
-10. Footer, privacy and contact.
+1. Hero: value, pilot CTA, interactive-demo CTA, original receipt and prototype disclosure.
+2. Interactive demo: product photos, explicit simulation boundary, cashier correction, manual entry and payment overlay.
+3. Three workflows: billing/control; stock/deliveries; udhaar/daily operations.
+4. Four camera steps, six products, training/non-affiliation notes and the supplementary signature motif.
+5. Pilot readiness: working/sample-tested/next, requirements, limitations and expandable hardware concept.
+6. Privacy: camera path, cloud shop records, optional messaging provider and FormSubmit; unknown policies explicit.
+7. FAQs with material limitations.
+8. Pilot form: four required details plus consent; optional fields in a disclosure; next steps and contact.
 
 ## Evidence rules
 
@@ -54,7 +52,7 @@ Every simulation, screenshot and concept has a visible disclosure. Screenshots m
 
 ## Owner inputs still needed
 
-- Activated, delivery-tested form; optional recipient alias and actual hosted URL.
+- Activated, delivery-tested form; optional recipient alias. Supplied live URL: `https://aiot.shahonthefloor.workers.dev/`.
 - Native-speaker review of Gujarati, Hindi and Marathi.
 - Current real-app recording, clean register capture and optional setup photo.
 - Pilot scope, cost, installation/support and hosting/data-handling arrangements.

@@ -1,5 +1,7 @@
 # Enhanced landing images
 
+**19 October 2026 audit update:** these generated derivatives are retained as historical files only. The current page and social preview use original `receipt.png`, `invoice.png` and `reports.png`, framed in CSS without redrawing pixels. The receipt crop excludes the camera-unavailable panel; it demonstrates a sample receipt, not successful recognition. The invoice frame shows the first two original rows. Full-capture links retain the complete original evidence. The enhanced derivatives are excluded from the public allowlists. The notes below describe the earlier image-editing work, not current evidence.
+
 Updated 2026-10-17 at the owner's request. Built-in Image Generation was used, followed by visual comparison with the original captures. Original files `receipt.png` and `invoice.png` are retained locally; the page and its full-size link use the enhanced variants.
 
 - `receipt-enhanced.png`: 1153 × 1364. Receipt-only close-up, sharper type, unchanged sample bill/customer/amounts. The page crops only the surrounding white margin with CSS. Labelled as AI enhanced.

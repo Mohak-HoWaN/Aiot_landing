@@ -1,6 +1,6 @@
 # JonaRu Model-1 landing page
 
-Updated 2026-10-17 from the owner's factual handoff. A standalone website; implementation, assets and checks stay in `landing/`. The product app and database were not changed or used to generate new data.
+Updated 2026-10-19 from the owner's factual handoff. A standalone website; implementation, assets and checks stay in `landing/`. The product app and database were not changed or used to generate new data.
 
 ## Preview
 
@@ -15,9 +15,9 @@ Open **http://127.0.0.1:4173**. `npm start` validates all four dictionaries, gen
 
 ## Included
 
-- Shop-owner positioning: billing, stock and udhaar together; camera assistance for six snacks. Primary action: **Request a demo**.
+- Shop-owner positioning: billing, stock and udhaar together; camera assistance for six snacks. Primary action: **Request a Pilot Demo**.
 - Real-app receipt detail in the hero, with demo-data disclosure. The unbuilt hardware concept is smaller, below the fold, behind an explicit disclosure.
-- Four kirana situations, three workflow steps and counter / stock / sales feature bands. Udhaar, returns, loose items, write-offs, profit and reorders are included.
+- Pilot-first eight-section structure with the demo immediately after the hero, four camera steps and billing / stock / udhaar workflow groups. Udhaar, returns, loose items, write-offs, profit and reorders are included.
 - Real udhaar, invoice and report captures replace invented mini interfaces. Full captures open separately. Screens stay in English and are labelled as samples.
 - Separate camera-to-bill hero motif, played once with replay. Simulated checkout supports six product photos, dragging, keyboard/button movement, correction and manual entry. Make bill offers cash/UPI choices in an overlay within the existing sample bill: cash shows an animated confirmation; UPI shows a labelled demo QR for three seconds before confirmation. Confirmation stays for two seconds, fades out and reveals the bill. No extra section height or restart button. No real payment is made or verified. Editing the bill cancels the payment preview. Reduced motion shows a static confirmation.
 - Working / sample-tested / next status board. Internet, hardware, payments, training, data handling, pricing and GST limits are explicit.
@@ -63,15 +63,15 @@ Integration reference: [official FormSubmit documentation](https://formsubmit.co
 
 ## Asset provenance
 
-Existing review captures were copied read-only from the reviewer's temporary output. **No shop test script ran and no database was accessed.** At the owner's request, the receipt and Receive Stock images now use clearly labelled AI-enhanced derivatives. Sample financial values were preserved; the invoice excerpt shows only the first two rows. Original captures remain locally. See `assets/IMAGE-NOTES.md` for provenance and prompt details.
+Original application captures are now used directly, framed in CSS. AI-enhanced derivatives are retained locally but excluded from publication. No app or database access was used to produce new screenshots. See `AUDIT.md` and `assets/IMAGE-NOTES.md` for evidence and limits.
 
 | File | Original capture | Context |
 | --- | --- | --- |
-| `assets/receipt-enhanced.png` | Enhanced from `1-udhaar-receipt.png` | Sharp receipt-only preview with the original sample customer and amounts. The original `receipt.png` includes a blocked camera; neither image establishes recognition performance. |
+| `assets/receipt.png` | `1-udhaar-receipt.png` | Original sample receipt. CSS crops the receipt, excluding the blocked-camera panel. Full capture remains accessible; this is not proof of camera performance. |
 | `assets/udhaar.png` | `3-udhaar-page.png` | Settled sample customer's credit page. |
-| `assets/invoice-short.png` | Enhanced from `2-photo-imported.png` | Two complete sample rows, retaining their costs/prices/margins. Later rows omitted. Original retained as `invoice.png`. |
+| `assets/invoice.png` | `2-photo-imported.png` | Original synthetic invoice draft. CSS shows the first two rows; the full-capture link includes all rows. Values are unchanged. |
 | `assets/reports.png` | `4-reports.png` | Frame shows sales/profit summary. Full capture includes camera-correction tiles; all are synthetic records, not recognition-performance evidence. |
-| `assets/social-preview.png` | Local HTML composition rendered by `qa.mjs` | Enhanced receipt, branding and explicit enhancement/demo-data label. |
+| `assets/social-preview.png` | Local HTML composition rendered by `qa.mjs` | Original receipt, branding and explicit demo-data label. |
 
 `JonaRu-Reimagined.jpeg` is the original AI concept. Its imagined fruit recognition, sensors, enclosure and screen specifications are not built features. No older fruit demo video is used.
 
@@ -92,13 +92,13 @@ npm run check:browser
 
 Browser checks require Node 22+ with built-in WebSocket (run here on Node 26) and installed Chrome. Set `CHROME_PATH` if needed. Screenshots, isolated profile and results go only to ignored `.qa/`. The script closes its own browser; browser sandbox permission may be required. Form responses are synthetic; no email is sent.
 
-The final browser run passed **39 interaction assertions** and covered all four languages at **320, 390, 768 and 1366 px**. No horizontal overflow, no HTML text below 12 px and no uncaught exceptions. English CTA visible at 1366×768 and 390×844. Checks include actual pointer dragging both ways, keyboard movement, all six product choices, localised required/phone/email validation, menu/FAQ, correction/manual/udhaar, language/form preservation, mobile bar, reduced motion, no-JS content/native POST and mocked success/error/network/verification. See `.qa/results.json` for exact executed assertions.
+The 2026-10-19 audit runs the updated suite covering 16 viewport/language combinations, six product photos, pointer/touch/keyboard crossing, cashier correction, sample payment overlay and timing, Escape/focus, reduced motion, form validation, intercepted success/error/network/verification/timeout responses, no-JS content/native POST and image loading. See `AUDIT.md` and `.qa/results.json` for final counts and results. Form inbox delivery and physical-device behavior are not verified by these tests.
 
 These are landing-page checks, not product, camera, physical-phone or inbox tests. Native-speaker review and live form delivery remain outstanding. Product tests were not rerun.
 
 ## Static hosting
 
-**Deploy settings for any static host (Cloudflare Pages, Vercel, Netlify, Render Static Site):** build command `npm run dist`, output directory `dist`, Node 18 or newer. `npm run dist` builds the page and copies only the public files into `dist/`, and stops with an error if the page links to a file that is not published. Set the `SITE_URL` environment variable to the real HTTPS address so the canonical and social links are correct. Do not use a "Web Service" type: those sleep when idle on free plans, and this site needs no server.
+**Deploy settings for any static host (Cloudflare Pages, Vercel, Netlify, Render Static Site):** build command `npm run dist`, output directory `dist`, Node 18 or newer. `npm run dist` builds the page and copies only the public files into `dist/`, and stops with an error if the page links to a file that is not published. Canonical and social URLs default to the supplied `https://aiot.shahonthefloor.workers.dev/`; override `SITE_URL` when the public domain changes. Do not use a "Web Service" type: those sleep when idle on free plans, and this site needs no server.
 
 **Cloudflare (Workers Builds, the screen with three commands):** build command `npm run dist`, deploy command `npx wrangler deploy`, preview (version) command `npx wrangler versions upload`. `wrangler.jsonc` points it at `dist/`; its `name` must equal the project name in Cloudflare. On the older Cloudflare Pages screen use build command `npm run dist` and output directory `dist` instead.
 

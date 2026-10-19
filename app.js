@@ -11,6 +11,7 @@ const productImages = ['chataka-pataka', 'poprings', 'dairy-milk', 'center-fruit
 let selected = 5, crossed = false, demoMessage = 'ready';
 let paymentState = 'idle', paymentMethod = '', paymentTimer;
 const quantities = new Map();
+const trackedOnBill = new Set();
 let played = false, playing = false, timers = [];
 
 function languageChange(code) {
@@ -58,6 +59,7 @@ function updateDemo() {
 function move(toBill, automatic = false) {
   if (!automatic) { cancelSequence(); played = true; }
   if (toBill !== crossed) {
+    if (toBill) trackedOnBill.add(selected); else trackedOnBill.delete(selected);
     quantities.set(selected, Math.max(0,(quantities.get(selected)||0)+(toBill?1:-1)));
     crossed = toBill; resetPayment(); demoMessage = toBill?'added':'removed';
   }
@@ -65,11 +67,11 @@ function move(toBill, automatic = false) {
   updateDemo();
 }
 function finalFrame() {
-  cancelSequence(); quantities.clear(); crossed = false; resetPayment();
+  cancelSequence(); quantities.clear(); trackedOnBill.clear(); crossed = false; resetPayment();
   move(true,true); played = true;
 }
 function replay() {
-  cancelSequence(); played = true; crossed = false; resetPayment(); quantities.clear();
+  cancelSequence(); played = true; crossed = false; resetPayment(); quantities.clear(); trackedOnBill.clear();
   $('#manual-panel').hidden = true; $('#demo-pack').classList.remove('is-recognised');
   demoMessage = 'ready'; updateDemo();
   if (reduced.matches || document.hidden) { finalFrame(); return; }
@@ -82,13 +84,14 @@ $('#demo-add').addEventListener('click',()=>move(true));
 $('#demo-back').addEventListener('click',()=>move(false));
 $('#replay').addEventListener('click',replay);
 $('#demo-select').addEventListener('change',event=>{
-  cancelSequence(); resetPayment(); played = true; selected = Number(event.target.value); crossed = false;
-  $('#demo-pack').classList.remove('is-recognised'); demoMessage = 'ready'; updateDemo();
+  cancelSequence(); resetPayment(); played = true; selected = Number(event.target.value); crossed = trackedOnBill.has(selected);
+  $('#demo-pack').classList.toggle('is-recognised', crossed); demoMessage = 'ready'; updateDemo();
 });
 $('#bill-rows').addEventListener('click',event=>{
   const button = event.target.closest('[data-remove]'); if (!button) return;
   cancelSequence(); played = true;
   const id = Number(button.dataset.remove); quantities.set(id,Math.max(0,(quantities.get(id)||0)-1));
+  trackedOnBill.delete(id);
   if(id===selected) {crossed=false; $('#demo-pack').classList.remove('is-recognised');}
   resetPayment(); demoMessage='corrected'; updateDemo();
   // Preserve a useful focus location when the last row disappears.
@@ -138,7 +141,7 @@ $('#pay-upi').addEventListener('click',()=>{
   paymentTimer = setTimeout(()=>{if(paymentState === 'upi')receivePayment('upi');},3000);
 });
 
-let drag = null, suppressClick = false;
+let drag = null, suppressClickUntil = 0;
 const pack = $('#demo-pack'), scene = $('#counter-scene');
 pack.addEventListener('pointerdown',event=>{
   if(event.button!==0)return;
@@ -155,10 +158,10 @@ pack.addEventListener('pointerup',event=>{
   if(!drag || event.pointerId!==drag.id)return;
   const wasDragged=drag.moved, toBill=(drag.last-drag.box.left)/drag.box.width<.30;
   drag=null; pack.classList.remove('is-dragging'); pack.style.transform='';
-  if(wasDragged){suppressClick=true;move(toBill);setTimeout(()=>suppressClick=false,0);}
+  if(wasDragged){suppressClickUntil=Date.now()+400;move(toBill);}
 });
 pack.addEventListener('pointercancel',()=>{drag=null;pack.classList.remove('is-dragging');pack.style.transform='';});
-pack.addEventListener('click',()=>{if(!suppressClick)move(!crossed);});
+pack.addEventListener('click',event=>{if(event.detail===0 || Date.now()>suppressClickUntil)move(!crossed);});
 pack.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft');}});
 
 if('IntersectionObserver' in window){
@@ -176,6 +179,11 @@ function closeMenu(){mobileNav.hidden=true;menuToggle.setAttribute('aria-expande
 menuToggle.addEventListener('click',()=>{const open=menuToggle.getAttribute('aria-expanded')==='true';mobileNav.hidden=open;menuToggle.setAttribute('aria-expanded',String(!open));});
 mobileNav.addEventListener('click',event=>{if(event.target.closest('a'))closeMenu();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape' && !mobileNav.hidden){closeMenu();menuToggle.focus();}});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape' && paymentState!=='idle'){
+    resetPayment();demoMessage='ready';updateDemo();$('#demo-make-bill').focus({preventScroll:true});
+  }
+});
 document.addEventListener('click',event=>{if(!event.target.closest('.site-header'))closeMenu();});
 window.addEventListener('resize',()=>{if(getComputedStyle(menuToggle).display==='none')closeMenu();},{passive:true});
 let scrollQueued=false;
@@ -212,6 +220,7 @@ form.addEventListener('input',()=>{if(formState==='formSuccess'){formState='';up
 form.addEventListener('input',clearValidity);form.addEventListener('change',clearValidity);
 form.addEventListener('invalid',event=>{
   const field=event.target;field.setCustomValidity('');
+  field.closest('details')?.setAttribute('open','');
   if(field.validity.valueMissing)field.setCustomValidity(t(field.type==='checkbox'?'consentRequired':'required'));
   else if(field.validity.typeMismatch)field.setCustomValidity(t('emailInvalid'));
   else if(field.validity.patternMismatch)field.setCustomValidity(t('phoneInvalid'));
