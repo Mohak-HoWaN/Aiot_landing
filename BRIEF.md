@@ -1,12 +1,12 @@
 # JonaRu Model-1 — current landing brief
 
-Updated 2026-10-19 after the live-page and repository audit. Brand: **JonaRu**, including visual styling. Work only in `landing/`. See `AUDIT.md` for evidence, results and remaining confirmations.
+Updated 2026-10-31 from the current scan-zone implementation. Brand: **JonaRu**, including visual styling. Work only in `landing/`. See `AUDIT.md` for evidence, results and remaining confirmations.
 
 ## Audience and action
 
 Primary: kirana and snack-shop owners considering a demo. Secondary: college/SSIP evaluators and investors looking for real working software.
 
-Positioning: **One simple app for your counter, stock and udhaar.** The camera attracts attention; connected shop workflows explain daily value. Plain practical copy, white/blue palette, real evidence, readable type and purposeful motion.
+Positioning: **One simple app for your counter, stock and udhaar.** The camera attracts attention; connected shop workflows explain daily value. Plain practical copy, porcelain/blue/steel palette, real evidence, readable type and purposeful motion. See DESIGN.md for research and composition.
 
 Action: **Request a Pilot Demo**. Pilot terms, eligibility, duration, installation, support and pricing are unknown. Do not imply a booked appointment, available deployment, free pilot or purchase commitment. Contact: `howan.ms.tc@gmail.com`.
 
@@ -15,10 +15,10 @@ Action: **Request a Pilot Demo**. Pilot terms, eligibility, duration, installati
 - Working prototype in pilot preparation. No real shop trial or Raspberry Pi run.
 - Billing uses the browser device's camera, sending frames to a vision server. Real counters require HTTPS for camera access.
 - Six packaged snacks: Balaji Chataka Pataka, Balaji PopRings, Cadbury Dairy Milk, Center Fruit, Nestlé KitKat and Oreo. Demonstration products, not partners.
-- Line crossings add/remove tracked items. Simulation moves from the larger counter side to the smaller billed side; line position is illustrative.
+- Rectangular scan-zone occupancy adds/removes recognised items after the count settles. Keep packets in one layer. Products outside the zone are not billed. Paid items remaining inside stay excluded from the next bill until removed. Sources: `project/pipeline/jonaru/zone.py` and the October 29 camera help topic.
 - Inventory products can be tapped onto a bill. Adding inventory does not train the camera. No barcode scanning or billing search. The scrolling strip has limitations for large catalogues.
 - Cashier can add/remove/edit quantities and void bills. Saving beyond available stock is blocked.
-- Cash, UPI and customer udhaar are recorded, not collected or verified. Payments/returns affect the customer credit ledger.
+- Cash, UPI and customer udhaar are recorded, not collected or verified. The app does not generate a UPI QR. Payments/returns affect the customer credit ledger.
 - Loose items: manually type grams. No connected scale or camera recognition for loose goods.
 - Vendor receiving: packs/pieces, costs/prices, batch, expiry and supplier credit. Distinguish supplier credit from customer udhaar.
 - PDF/photo invoice import creates a reviewable draft. Tested only on synthetic English invoices on a PC. Real invoices, non-English reading and Pi timing are unproven. Vendor layout memory is planned.
@@ -35,11 +35,11 @@ Source basis: owner's 2026-10-16 code-referenced handoff, project handoff/stock-
 
 ## Page order
 
-1. Hero: value, pilot CTA, interactive-demo CTA, original receipt and prototype disclosure.
+1. Hero: value, demo-request CTA, interactive-demo CTA, dimensional scan-zone illustration using real packet photos, and prototype disclosure.
 2. Interactive demo: product photos, explicit simulation boundary, cashier correction, manual entry and payment overlay.
 3. Three workflows: billing/control; stock/deliveries; udhaar/daily operations.
 4. Four camera steps, six products, training/non-affiliation notes and the supplementary signature motif.
-5. Pilot readiness: working/sample-tested/next, requirements, limitations and expandable hardware concept.
+5. Pilot readiness: working/sample-tested/next, requirements, limitations and current requirements.
 6. Privacy: camera path, cloud shop records, optional messaging provider and FormSubmit; unknown policies explicit.
 7. FAQs with material limitations.
 8. Pilot form: four required details plus consent; optional fields in a disclosure; next steps and contact.
@@ -48,7 +48,7 @@ Source basis: owner's 2026-10-16 code-referenced handoff, project handoff/stock-
 
 Never invent reviews, shop logos, partnerships, demand, prices, accuracy, speed, savings or usage counts. No fake activity, countdowns or trust strips. Six-product count comes from the manifest. Simulation prices/customer names and screenshot amounts are explicitly examples, never performance or customer evidence.
 
-Every simulation, screenshot and concept has a visible disclosure. Screenshots may be framed but must not be redrawn to fabricate recognition. Hero is a receipt capture, not a live-camera demonstration. Provenance and limitations are in `README.md`.
+Every simulation, screenshot and concept has a visible disclosure. Screenshots may be framed but must not be redrawn to fabricate recognition. Hero is a labelled workflow illustration, not a live-camera demonstration or a hardware design. Provenance and limitations are in `README.md`.
 
 ## Owner inputs still needed
 

@@ -1,116 +1,76 @@
-# JonaRu Model-1 landing page
+﻿# JonaRu Model-1 landing page
 
-Updated 2026-10-19 from the owner's factual handoff. A standalone website; implementation, assets and checks stay in `landing/`. The product app and database were not changed or used to generate new data.
+Updated 2026-10-31. A standalone HTML/CSS/JavaScript site in `landing/`, aligned to the rectangular scan-zone checkout introduced in the product on October 29.
 
 ## Preview
-
-Node.js 18+; no dependencies to install.
 
 ```powershell
 cd landing
 npm start
 ```
 
-Open **http://127.0.0.1:4173**. `npm start` validates all four dictionaries, generates static English HTML and starts the local server. The explicit public-file allowlist does not expose docs, tests, browser profiles, product code or environment files.
+Open http://127.0.0.1:4173. Node 18+; no runtime packages or remote fonts required.
 
-## Included
+## Current experience
 
-- Shop-owner positioning: billing, stock and udhaar together; camera assistance for six snacks. Primary action: **Request a Pilot Demo**.
-- Real-app receipt detail in the hero, with demo-data disclosure. The unbuilt hardware concept is smaller, below the fold, behind an explicit disclosure.
-- Pilot-first eight-section structure with the demo immediately after the hero, four camera steps and billing / stock / udhaar workflow groups. Udhaar, returns, loose items, write-offs, profit and reorders are included.
-- Real udhaar, invoice and report captures replace invented mini interfaces. Full captures open separately. Screens stay in English and are labelled as samples.
-- Separate camera-to-bill hero motif, played once with replay. Simulated checkout supports six product photos, dragging, keyboard/button movement, correction and manual entry. Make bill offers cash/UPI choices in an overlay within the existing sample bill: cash shows an animated confirmation; UPI shows a labelled demo QR for three seconds before confirmation. Confirmation stays for two seconds, fades out and reveals the bill. No extra section height or restart button. No real payment is made or verified. Editing the bill cancels the payment preview. Reduced motion shows a static confirmation.
-- Working / sample-tested / next status board. Internet, hardware, payments, training, data handling, pricing and GST limits are explicit.
-- 16 px body, 14 px secondary, minimum 12 px labels. System fonts, native scrolling, no animation loops. Reduced motion shows final static scenes.
-- English on every fresh load; Gujarati, Hindi and Marathi translations. Language changes preserve form values and independently selected contact language.
-- Static English content and form work without JavaScript. Mobile request bar hides at the form or while editing.
-- FormSubmit AJAX responses with confirmed service acceptance, errors and verification states; native POST fallback.
+- Product-led hero with real packet photos, a dimensional CSS counter illustration and visitor-controlled Place / Review / Clear stages. The illustration is explicitly distinguished from a live camera and physical hardware.
+- Interactive rectangular scan zone: place a supported packet, remove it, correct the ticket, or add a manual item. Pointer, touch, buttons and arrow keys work.
+- Explicit sample Cash received, UPI received and Put on udhaar actions. No payment QR, automatic payment verification or payment collection. Udhaar is illustrative; no customer record is created.
+- After recording a sample sale, paid packets remain excluded from the next bill until removed. New bill clears the ticket while preserving occupied paid items. Replay resets the illustration.
+- Original app captures for billing, vendor invoice drafts and reporting. Sample data remains labelled.
+- English, Gujarati, Hindi and Marathi, with identical dictionary structure. Fresh loads start in English; changing language preserves form inputs and independently selected contact language.
+- Keyboard focus, reduced motion, static English content and a native form fallback. No looping decorative animations or scroll hijacking.
+- Existing FormSubmit request flow retained, with confirmed service-acceptance handling and recoverable errors.
 
-## Editing and files
+Research and design rationale: `DESIGN.md`. Product claims and constraints: `BRIEF.md`. Verification history: `AUDIT.md`.
+
+## Editing
 
 | File | Purpose |
 | --- | --- |
-| `index.template.html` | Source structure, form, metadata and translation placeholders |
-| `index.html` | Generated English HTML; publish this, not the template |
-| `locales/en.js`, `hi.js`, `gu.js`, `mr.js` | Complete dictionaries; retain identical structure |
-| `copy.js` | Dictionary exports, six product names and strict parity validation |
-| `render.js` | Shared static-build/language-switch section markup |
-| `build.mjs` | Builds English HTML and optional public-domain metadata |
-| `app.js`, `styles.css` | Interactions, forms, responsive design and motion |
-| `assets/` | Real sample captures and social preview |
-| `server.mjs` | Local preview with explicit public-file allowlist |
+| `index.template.html` | Source structure and translation placeholders |
+| `index.html` | Generated English page |
+| `locales/*.js`, `copy.js` | Four dictionaries and strict structure validation |
+| `render.js` | Shared translated section markup |
+| `app.js` | Hero stages, zone demo, payment records, forms and navigation |
+| `styles.css` | Layout, responsive styling and CSS perspective |
+| `build.mjs` | Static HTML and canonical/social metadata |
+| `server.mjs` | Local preview with an explicit public-file allowlist |
+| `publish.mjs` | Generates the public `dist/` directory |
 | `check.mjs`, `qa.mjs` | Static and isolated browser checks |
-| `BRIEF.md`, `enhance.md` | Product truth and enhancement handoff |
 
-Run `npm run build` after changing the template, copy or render helper. New assets need adding to `server.mjs`. Additional languages need complete dictionaries, imports, both language selectors and the allowlist.
+Run `npm run build` after editing markup or copy. New public files must be listed in both `server.mjs` and `publish.mjs`.
 
-## Form: owner activation remains required
-
-Recipient: **howan.ms.tc@gmail.com**. No activation or real test email was sent during this work.
-
-1. Submit once from the hosted page and confirm the activation email in that mailbox; check Spam.
-2. If FormSubmit provides a recipient alias, replace the address in the template form's `action`. AJAX derives its URL from the action. Rebuild.
-3. Test delivery from a phone and laptop, including contact-language values. A green message means the service accepted the request; it does not prove inbox delivery.
-4. Verify CAPTCHA behaviour on the activated hosted form. We do not set `_captcha=false`, solve challenges or assume AJAX can display a CAPTCHA. On verification/failure, the visitor can use the standard POST, which opens FormSubmit. Live verification has not been tested.
-5. No-JS completion uses FormSubmit's page. Add `_next` only when a real hosted thank-you URL exists.
-6. Review the on-page privacy wording and [FormSubmit privacy terms](https://formsubmit.co/privacy.pdf). Verify current limits and retention before launch; the page promises no retention period or response deadline.
-
-Required: name, shop, phone, city and consent. Email, product range, contact language and message are optional. Hidden `_honey` is a bot trap; its contents never cause a local success. No API key, mailbox password, analytics, local submission storage or payment collection is used.
-
-Success requires an OK response and explicit `success: true` or `"true"`. Activation/verification messages are not success. Failures preserve inputs and show the email alternative. A timeout is unconfirmed because an interrupted response cannot establish whether the service received the request.
-
-Integration reference: [official FormSubmit documentation](https://formsubmit.co/documentation), checked 2026-10-16. Inbox delivery remains an owner check.
-
-## Asset provenance
-
-Original application captures are now used directly, framed in CSS. AI-enhanced derivatives are retained locally but excluded from publication. No app or database access was used to produce new screenshots. See `AUDIT.md` and `assets/IMAGE-NOTES.md` for evidence and limits.
-
-| File | Original capture | Context |
-| --- | --- | --- |
-| `assets/receipt.png` | `1-udhaar-receipt.png` | Original sample receipt. CSS crops the receipt, excluding the blocked-camera panel. Full capture remains accessible; this is not proof of camera performance. |
-| `assets/udhaar.png` | `3-udhaar-page.png` | Settled sample customer's credit page. |
-| `assets/invoice.png` | `2-photo-imported.png` | Original synthetic invoice draft. CSS shows the first two rows; the full-capture link includes all rows. Values are unchanged. |
-| `assets/reports.png` | `4-reports.png` | Frame shows sales/profit summary. Full capture includes camera-correction tiles; all are synthetic records, not recognition-performance evidence. |
-| `assets/social-preview.png` | Local HTML composition rendered by `qa.mjs` | Original receipt, branding and explicit demo-data label. |
-
-`JonaRu-Reimagined.jpeg` is the original AI concept. Its imagined fruit recognition, sensors, enclosure and screen specifications are not built features. No older fruit demo video is used.
-
-Screenshots contain smaller raster text than the website copy; HTML typography checks do not measure text inside images. Feature captures have full-size links. Stronger proof still needs a clean current register capture and real 20–30 second recording. Do not manufacture these.
-
-## Checks and limits
-
-With the preview running:
+## Verification
 
 ```powershell
 npm run check
-# Include HTTP asset and private-file checks:
-$env:CHECK_HTTP = '1'
-npm run check
-# Isolated headless Chrome; all external form requests intercepted:
 npm run check:browser
+npm run dist
 ```
 
-Browser checks require Node 22+ with built-in WebSocket (run here on Node 26) and installed Chrome. Set `CHROME_PATH` if needed. Screenshots, isolated profile and results go only to ignored `.qa/`. The script closes its own browser; browser sandbox permission may be required. Form responses are synthetic; no email is sent.
+Browser checks need Node 22+ and installed Chrome; set `CHROME_PATH` if needed. The suite starts an isolated headless browser and intercepts external requests, including all form submissions. Screenshots and results are written into ignored `.qa/`. It checks 16 viewport/language combinations, keyboard and touch interactions, zone boundaries, paid-item carryover, hero controls, form responses, reduced motion and no-JavaScript fallback.
 
-The 2026-10-19 audit runs the updated suite covering 16 viewport/language combinations, six product photos, pointer/touch/keyboard crossing, cashier correction, sample payment overlay and timing, Escape/focus, reduced motion, form validation, intercepted success/error/network/verification/timeout responses, no-JS content/native POST and image loading. See `AUDIT.md` and `.qa/results.json` for final counts and results. Form inbox delivery and physical-device behavior are not verified by these tests.
+These checks do not validate camera accuracy, physical hardware, real shop performance, translations with native speakers, or email delivery.
 
-These are landing-page checks, not product, camera, physical-phone or inbox tests. Native-speaker review and live form delivery remain outstanding. Product tests were not rerun.
+## Assets and truth
 
-## Static hosting
+Packet photos in `assets/products/` are existing local source images, framed/cropped with CSS. The hero adds no invented device or generated product model. The sample ticket in that illustration uses example prices, not retail or pilot prices.
 
-**Deploy settings for any static host (Cloudflare Pages, Vercel, Netlify, Render Static Site):** build command `npm run dist`, output directory `dist`, Node 18 or newer. `npm run dist` builds the page and copies only the public files into `dist/`, and stops with an error if the page links to a file that is not published. Canonical and social URLs default to the supplied `https://aiot.shahonthefloor.workers.dev/`; override `SITE_URL` when the public domain changes. Do not use a "Web Service" type: those sleep when idle on free plans, and this site needs no server.
+Original captures remain unchanged: `receipt.png` (sample customer-credit receipt), `invoice.png` (synthetic English invoice draft), `reports.png` (sample sales/profit), and `udhaar.png` (sample credit ledger). Full captures open separately. They are evidence of the shown prototype UI, not proof of camera performance. Social preview uses an original sample receipt.
 
-**Cloudflare (Workers Builds, the screen with three commands):** build command `npm run dist`, deploy command `npx wrangler deploy`, preview (version) command `npx wrangler versions upload`. `wrangler.jsonc` points it at `dist/`; its `name` must equal the project name in Cloudflare. On the older Cloudflare Pages screen use build command `npm run dist` and output directory `dist` instead.
+The older AI enclosure concept and illustrative QR remain source files for history but are excluded from the page and publication allowlist. No competitor assets are copied.
 
-The file list below is what `dist/` contains:
+The most useful future asset is a current real checkout recording: place supported products in one layer, let the count settle, remove an item, review, record payment, and clear the counter. Do not show private customer details.
 
-Upload only `index.html`, `styles.css`, `app.js`, `copy.js`, `render.js`, the four `locales/*.js`, `favicon.svg`, `JonaRu-Reimagined.jpeg`, the five listed `assets/*.png`, `assets/demo-qr.svg`, and the six `assets/products/*.jpg` packet photos. The QR is an illustrative SVG with a DEMO centre label; it contains no payment address. Serve JavaScript with the correct MIME type. Do not publish `.qa` or the development repository.
+## Request form
 
-No public domain was supplied. OG image is relative for local work. Canonical and absolute social URLs are built only with the actual HTTPS page URL:
+Recipient: howan.ms.tc@gmail.com. The owner still needs to activate FormSubmit and verify actual inbox delivery. No activation email or test message was sent by this redesign.
 
-```powershell
-$env:SITE_URL = 'https://YOUR-ACTUAL-DOMAIN/your-page/'
-npm run build
-```
+The form requires name, shop, phone, city and contact consent. Other details are optional. Success means FormSubmit accepted the request, not confirmed inbox delivery. Failed or unconfirmed requests preserve inputs and offer email/native POST alternatives. No analytics, payment collection or local submission storage is added.
 
-Replace the example with the real URL before running. Nothing has been published or pushed.
+## Hosting
+
+Static build command: `npm run dist`; output directory: `dist`. Cloudflare Workers configuration is retained. Canonical/social URLs default to the supplied https://aiot.shahonthefloor.workers.dev/; set `SITE_URL` to change them. Publish only `dist/`, never the development repository.
+
+The redesign has been prepared locally; deployment is separate.

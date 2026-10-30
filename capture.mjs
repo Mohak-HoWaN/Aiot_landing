@@ -29,6 +29,9 @@ try {
     await run("document.querySelector('#checkout-demo').scrollIntoView({block:'start',behavior:'instant'})");await delay(1800);await snap(width+'-demo');
     metrics.push(await run(`({width:innerWidth,height:document.documentElement.scrollHeight,overflow:document.documentElement.scrollWidth>innerWidth,inputs:document.querySelectorAll('#pilot-form input:not([type=hidden]):not(.honeypot),#pilot-form select,#pilot-form textarea').length,demoTop:document.querySelector('#checkout-demo').getBoundingClientRect().top+scrollY})`));
     if(label==='after' && [390,1366].includes(width)){
+      await run("document.querySelector('#demo-back').click();document.querySelector('#demo-add').click();document.querySelector('#demo-make-bill').click();document.querySelector('#pay-upi').click();document.querySelector('.demo-bill').scrollIntoView({block:'center',behavior:'instant'})");
+      await delay(800);await snap(width+'-payment');
+      await run("document.querySelector('#new-bill').click();document.querySelector('#demo-back').click()");
       for(const [name,selector] of [['stock','.capture-1'],['privacy','#data-handling'],['form','#pilot-form']]){
         await run(`document.querySelector('${selector}').scrollIntoView({block:'start',behavior:'instant'})`);await delay(150);await snap(width+'-'+name);
       }

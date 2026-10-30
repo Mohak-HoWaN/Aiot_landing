@@ -1,3 +1,15 @@
+# October 31 scan-zone redesign
+
+This entry supersedes the October 19 landing behavior below. See DESIGN.md for research and product source references.
+
+The landing now demonstrates rectangular occupancy, explicit cashier-confirmed cash/UPI/credit records, and exclusion of paid packets until removed. It no longer presents a line-crossing workflow, demo UPI QR, automatically verified payment, or invented future enclosure. The hero uses CSS perspective and original packet photos.
+
+The final revised browser run passed 76 assertions across 16 viewport/language combinations (1366, 768, 390, 320 px × English/Gujarati/Hindi/Marathi), with no overflow, HTML text under 12 px or browser exceptions. Results in .qa/results.json include vertical scan-zone boundaries. Desktop hero, mobile hero, feature and payment screenshots were visually reviewed. Static checks passed and dist contains 21 public files.
+
+Scope: landing only. Form responses are intercepted; no message sent, product app started, database modified or deployment performed. Current translations need native-speaker review. Real shop lighting, physical hardware, camera accuracy and inbox delivery are not established by landing checks.
+
+---
+
 # JonaRu landing audit — 19 October 2026
 
 ## Scope and baseline

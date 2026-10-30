@@ -1,5 +1,7 @@
 # JonaRu Model-1 — enhancement handoff
 
+Historical October 19 handoff. For the current October 31 scan-zone redesign, use README.md, DESIGN.md, BRIEF.md and the latest AUDIT.md entry. The line-crossing demo, UPI QR and future hardware concept described below have been superseded.
+
 Updated 2026-10-19. `AUDIT.md` supersedes historical test counts and the older page structure below. The main improvements below are implemented inside `landing/`. `README.md` covers preview, files, assets, form activation and verification limits.
 
 ## Implemented

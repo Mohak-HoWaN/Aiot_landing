@@ -51,7 +51,7 @@ try{
   await viewport(1366,768);
   // Social card uses the labelled enhanced receipt, retaining the original sample values.
   const frame=await send('Page.getFrameTree');
-  await send('Page.setDocumentContent',{frameId:frame.frameTree.frame.id,html:`<!doctype html><html><head><link rel="stylesheet" href="${previewBase}/styles.css"><style>body{width:1200px;height:630px;background:#edf2ff;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;padding:60px;gap:70px}h1{font-size:58px}p{font-size:23px;margin-top:24px}.receipt-detail{width:350px}.eyebrow{font-size:16px;margin-bottom:20px;text-transform:none}.caption{font-size:16px}</style></head><body><div><p class="eyebrow">JonaRu Model-1 · Pilot preparation</p><h1>Your counter,<br>stock and udhaar.<br>Together.</h1><p>A working prototype for small shops.<br>Request a Pilot Demo.</p></div><div><p class="eyebrow">Real app receipt · Demo data</p><div class="receipt-detail"><img src="${previewBase}/assets/receipt.png"></div><p class="caption">Original app capture. Sample data.</p></div></body></html>`});
+  await send('Page.setDocumentContent',{frameId:frame.frameTree.frame.id,html:`<!doctype html><html><head><link rel="stylesheet" href="${previewBase}/styles.css"><style>body{width:1200px;height:630px;background:#edf2ff;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;padding:60px;gap:70px}h1{font-size:58px}p{font-size:23px;margin-top:24px}.receipt-detail{width:350px}.eyebrow{font-size:16px;margin-bottom:20px;text-transform:none}.caption{font-size:16px}</style></head><body><div><p class="eyebrow">JonaRu Model-1 · Pilot preparation</p><h1>A little space.<br>A clearer<br>checkout.</h1><p>A working prototype for small shops.<br>Request a Pilot Demo.</p></div><div><p class="eyebrow">Real app receipt · Demo data</p><div class="receipt-detail"><img src="${previewBase}/assets/receipt.png"></div><p class="caption">Original app capture. Sample data.</p></div></body></html>`});
   await viewport(1200,630);await evaluate('Promise.all([...document.images].map(i=>i.decode().catch(()=>{})))');await delay(100);
   const social=await send('Page.captureScreenshot',{format:'png'});await writeFile(resolve(root,'assets/social-preview.png'),Buffer.from(social.data,'base64'));
   await viewport(1366,768);await navigate();await delay(1800);await snap('desktop-hero');
@@ -60,9 +60,9 @@ try{
       await viewport(width,844);await evaluate("window.scrollTo({top:0,behavior:'instant'})");
       await delay(100);await snap(`images-${width}-hero`);
       await evaluate("document.querySelectorAll('.feature-band')[1].scrollIntoView({behavior:'instant',block:'start'})");
-      await evaluate('Promise.all([...document.querySelectorAll(".capture-1 img,.receipt-detail img")].map(i=>i.decode()))');
+      await evaluate('Promise.all([...document.querySelectorAll(".capture-1 img,.capture-0 img")].map(i=>i.decode()))');
       await delay(100);await snap(`images-${width}-stock`);
-      const result=await evaluate(`(()=>{const i=document.querySelector('.capture-1 img'),r=document.querySelector('.receipt-detail img');return {overflow:document.documentElement.scrollWidth>innerWidth,invoice:i.naturalWidth,receipt:r.naturalWidth,invoiceVisible:i.getBoundingClientRect().bottom>=i.parentElement.getBoundingClientRect().bottom && i.getBoundingClientRect().top<=i.parentElement.getBoundingClientRect().top}})()`);
+      const result=await evaluate(`(()=>{const i=document.querySelector('.capture-1 img'),r=document.querySelector('.capture-0 img');return {overflow:document.documentElement.scrollWidth>innerWidth,invoice:i.naturalWidth,receipt:r.naturalWidth,invoiceVisible:i.getBoundingClientRect().bottom>=i.parentElement.getBoundingClientRect().bottom && i.getBoundingClientRect().top<=i.parentElement.getBoundingClientRect().top}})()`);
       assert.ok(!result.overflow && result.invoice===1262 && result.receipt===1262 && result.invoiceVisible,JSON.stringify(result));
       results.layouts.push({width,...result});
     }
@@ -109,28 +109,31 @@ try{
   await key('Escape');check('Escape closes menu and returns focus',await evaluate("document.querySelector('#mobile-nav').hidden && document.activeElement===document.querySelector('.menu-toggle')"));
   await evaluate("document.querySelector('.faq-list summary').focus()");await key('Enter');check('FAQ expands by keyboard',await evaluate("document.querySelector('.faq-list details').open"));await key('Enter');
   await evaluate("document.querySelector('#checkout-demo').scrollIntoView({behavior:'instant',block:'center'})");await delay(1800);
-  await evaluate("document.querySelector('#demo-back').click();document.querySelector('#demo-add').click()");check('Demo crossing adds item',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
+  await evaluate("document.querySelector('#demo-back').click();document.querySelector('#demo-add').click()");check('Demo zone placement adds item',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
   await evaluate("document.querySelector('[data-remove]').click()");check('Cashier correction removes item',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
   for(let id=0;id<6;id++){
     await evaluate(`document.querySelector('#demo-select').value='${id}';document.querySelector('#demo-select').dispatchEvent(new Event('change'));document.querySelector('#demo-add').click();`);
     check(`Product ${id+1}: button adds`,await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
     check(`Product ${id+1}: matching loaded photo`,await evaluate(`document.querySelector('#pack-image').decode().then(()=>document.querySelector('#pack-image').alt===document.querySelector('#demo-select').selectedOptions[0].textContent)`));
     await evaluate("document.querySelector('#demo-back').click()");
-    check(`Product ${id+1}: crossing back removes`,await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
+    check(`Product ${id+1}: zone placement back removes`,await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
   }
   await evaluate("document.querySelector('#demo-add').click();document.querySelector('#demo-select').value='0';document.querySelector('#demo-select').dispatchEvent(new Event('change'));document.querySelector('#demo-select').value='5';document.querySelector('#demo-select').dispatchEvent(new Event('change'));");
-  check('Changing selection preserves tracked crossing without duplicate',await evaluate("document.querySelector('#demo-add').disabled && document.querySelector('#demo-total').textContent==='₹10'"));
+  check('Changing selection preserves tracked zone placement without duplicate',await evaluate("document.querySelector('#demo-add').disabled && document.querySelector('#demo-total').textContent==='₹10'"));
   await evaluate("document.querySelector('#demo-back').click()");
   await evaluate("document.querySelector('#counter-scene').scrollIntoView({behavior:'instant',block:'center'});document.querySelector('#demo-pack').focus({preventScroll:true})");
   await key('ArrowLeft');check('Keyboard left adds product',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
   await key('ArrowRight');check('Keyboard right removes product',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));await delay(700);
-  async function dragProduct(fraction){
-    const point=await evaluate(`(()=>{const p=document.querySelector('#demo-pack').getBoundingClientRect(),s=document.querySelector('#counter-scene').getBoundingClientRect();return {x:p.x+p.width/2,y:p.y+p.height/2,end:s.x+s.width*${fraction}}})()`);
+  async function dragProduct(fraction, vertical=.51){
+    const point=await evaluate(`(()=>{const p=document.querySelector('#demo-pack').getBoundingClientRect(),s=document.querySelector('#counter-scene').getBoundingClientRect();return {x:p.x+p.width/2,y:p.y+p.height/2,end:s.x+s.width*${fraction},endY:s.y+s.height*${vertical}}})()`);
     await send('Input.dispatchMouseEvent',{type:'mousePressed',x:point.x,y:point.y,button:'left',clickCount:1});
-    for(let step=1;step<=8;step++)await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:point.x+(point.end-point.x)*step/8,y:point.y,buttons:1});
-    await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:point.end,y:point.y,button:'left',clickCount:1});await delay(700);
+    for(let step=1;step<=8;step++)await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:point.x+(point.end-point.x)*step/8,y:point.y+(point.endY-point.y)*step/8,buttons:1});
+    await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:point.end,y:point.endY,button:'left',clickCount:1});await delay(700);
   }
-  await dragProduct(.18);check('Pointer drag across line adds product',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
+  await dragProduct(.35,.06);check('Dropping above rectangle does not add a product',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
+  await dragProduct(.35,.51);check('Dropping inside rectangle adds a product',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
+  await dragProduct(.35,.96);check('Dropping below rectangle removes a product',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
+  await dragProduct(.18);check('Pointer drag into zone adds product',await evaluate("document.querySelector('#demo-total').textContent==='₹10'"));
   await dragProduct(.72);check('Pointer drag back removes product',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
   await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
   async function touchDrag(fraction){
@@ -144,29 +147,35 @@ try{
   await send('Emulation.setTouchEmulationEnabled',{enabled:false});
   await evaluate("document.querySelector('#demo-manual').click();document.querySelector('#manual-add').click();document.querySelector('#demo-make-bill').click();document.querySelector('#pay-cash').click()");
   check('Manual add and cash payment simulation work',await evaluate("document.querySelector('#demo-total').textContent==='₹10' && !document.querySelector('#payment-success').hidden"));
-  await delay(2350);check('Payment confirmation automatically dismisses',await evaluate("document.querySelector('#demo-payment').hidden && !document.querySelector('#demo-make-bill').disabled"));
-  await snap('mobile-demo');
-  const billHeight=await evaluate("document.querySelector('.demo-bill').getBoundingClientRect().height");
+  check('Sale confirmation waits for the visitor',await evaluate("!document.querySelector('#payment-success').hidden"));
+  await evaluate("document.querySelector('#new-bill').click()");
+  check('New bill starts empty',await evaluate("document.querySelector('#demo-total').textContent==='₹0'"));
+  await evaluate("document.querySelector('#demo-add').click();document.querySelector('#demo-make-bill').click()");
+  await key('Escape');check('Escape cancels payment and restores a usable control',await evaluate("document.querySelector('#demo-payment').hidden && document.activeElement.id==='demo-select'"));
   await evaluate("document.querySelector('#demo-make-bill').click()");
-  await key('Escape');check('Escape dismisses payment and restores focus',await evaluate("document.querySelector('#demo-payment').hidden && document.activeElement.id==='demo-make-bill'"));
-  await evaluate("document.querySelector('#demo-make-bill').click();document.querySelector('#pay-upi').click()");
-  check('UPI opens a distinct demo QR',await evaluate("!document.querySelector('#payment-qr').hidden && document.querySelector('#payment-qr img').alt.includes('Not a payment code')"));
-  check('Payment overlay preserves bill height',Math.abs(await evaluate("document.querySelector('.demo-bill').getBoundingClientRect().height")-billHeight)<1);
-  await evaluate("document.querySelector('.demo-bill').scrollIntoView({behavior:'instant',block:'center'})");await snap('mobile-upi');
-  await delay(1800);check('UPI does not confirm early',await evaluate("!document.querySelector('#payment-qr').hidden && document.querySelector('#payment-success').hidden"));
-  await delay(1300);check('UPI confirms after three seconds',await evaluate("document.querySelector('#payment-qr').hidden && !document.querySelector('#payment-success').hidden"));
-  await snap('mobile-payment');await delay(2350);
-  check('UPI confirmation dismisses without growing section',await evaluate("document.querySelector('#demo-payment').hidden") && Math.abs(await evaluate("document.querySelector('.demo-bill').getBoundingClientRect().height")-billHeight)<1);
-  await evaluate("document.querySelector('#demo-make-bill').click();document.querySelector('#pay-upi').click()");
-  // The bill is inert during payment, so use the external product control to edit instead.
-  await evaluate("document.querySelector('#demo-add').click()");await delay(3100);
-  check('Editing cancels pending payment completion',await evaluate("document.querySelector('#demo-payment').hidden"));
+  await delay(500);
+  check('Payment requires an explicit confirmation',await evaluate("!document.querySelector('#payment-choices').hidden && document.querySelector('#payment-success').hidden && !document.querySelector('#payment-qr')"));
+  await evaluate("document.querySelector('#pay-upi').click()");
+  check('UPI confirmation records a sample sale',await evaluate("!document.querySelector('#payment-success').hidden && !document.querySelector('#zone-reminder').hidden"));
+  await evaluate("document.querySelector('.demo-bill').scrollIntoView({behavior:'instant',block:'center'})");await snap('mobile-payment');
+  await evaluate("document.querySelector('#new-bill').click()");
+  check('Paid packets remain in zone without rebilling',await evaluate("document.querySelector('#demo-total').textContent==='₹0' && document.querySelector('#demo-add').disabled && !document.querySelector('#demo-back').disabled && !document.querySelector('#zone-reminder').hidden"));
+  await evaluate("document.querySelector('#demo-select').value='0';document.querySelector('#demo-select').dispatchEvent(new Event('change'));document.querySelector('#demo-select').value='5';document.querySelector('#demo-select').dispatchEvent(new Event('change'))");
+  check('Switching products does not rebill paid packets',await evaluate("document.querySelector('#demo-total').textContent==='₹0' && document.querySelector('#demo-add').disabled"));
+  await evaluate("document.querySelector('#demo-back').click()");
+  check('Clearing paid packets leaves next bill empty',await evaluate("document.querySelector('#demo-total').textContent==='₹0' && document.querySelector('#zone-reminder').hidden"));
+  await evaluate("document.querySelector('#demo-add').click();document.querySelector('#demo-make-bill').click();document.querySelector('#pay-credit').click()");
+  check('Udhaar is a distinct sample record',await evaluate("document.querySelector('#payment-method').textContent.includes('credit')"));
+  await evaluate("document.querySelector('#new-bill').click();document.querySelector('#demo-back').click()");
   for(const lang of ['en','gu','hi','mr']){
-    await evaluate(`document.querySelector('#language').value='${lang}';document.querySelector('#language').dispatchEvent(new Event('change'));document.querySelector('#demo-make-bill').click();document.querySelector('#pay-upi').click()`);
+    await evaluate(`document.querySelector('#language').value='${lang}';document.querySelector('#language').dispatchEvent(new Event('change'));document.querySelector('#demo-add').click();document.querySelector('#demo-make-bill').click()`);
     check(`${lang}: payment controls are localised`,await evaluate(`document.querySelector('#pay-cash').textContent===${JSON.stringify(translations[lang].payCash)} && document.querySelector('.payment-disclaimer').textContent===${JSON.stringify(translations[lang].paymentDisclaimer)}`));
-    await key('Escape');
+    await key('Escape');await evaluate("document.querySelector('#demo-back').click()");
   }
-  await evaluate("document.querySelector('#language').value='en';document.querySelector('#language').dispatchEvent(new Event('change'))");
+  await evaluate("document.querySelector('#language').value='en';document.querySelector('#language').dispatchEvent(new Event('change'));document.querySelector('[data-story=\"1\"]').click()");
+  check('Hero review state follows explicit interaction',await evaluate("document.querySelector('#hero-story').dataset.stage==='1' && document.querySelector('[data-story=\"1\"]').getAttribute('aria-pressed')==='true'"));
+  await evaluate("document.querySelector('[data-story=\"2\"]').click()");
+  check('Hero clear state explains the next customer',await evaluate("document.querySelector('#story-caption').textContent.includes('Start fresh')"));
   await evaluate("document.querySelector('#features').scrollIntoView({behavior:'instant'})");await delay(80);check('Mobile bar appears after hero',await evaluate("!document.querySelector('#mobile-booking').hidden"));
   await evaluate("document.querySelector('#book-pilot').scrollIntoView({behavior:'instant'})");await delay(80);check('Mobile bar hides at form',await evaluate("document.querySelector('#mobile-booking').hidden"));
   for(const responseMode of ['error','network','pending','timeout','success']){
@@ -188,6 +197,8 @@ try{
   mode='success';await evaluate(`(()=>{const f=document.querySelector('#pilot-form');f.elements['Owner name'].value='Demo';f.elements['Shop name'].value='Demo Shop';f.elements.Phone.value='9876543210';f.elements.City.value='Ahmedabad';f.elements['Contact consent'].checked=true;f.querySelector('[type=submit]').click();})()`);await delay(250);
   check('No-JS form performs native POST (intercepted, not sent)',nativeSubmission?.method==='POST');
   await send('Emulation.setScriptExecutionDisabled',{value:false});await viewport(1366,768);await navigate();
+  await evaluate("document.querySelector('[data-story=\"1\"]').click()");await delay(750);await snap('desktop-hero-review');
+  await evaluate("document.querySelector('#checkout-demo').scrollIntoView({behavior:'instant'});document.querySelector('#demo-back').click();document.querySelector('#demo-add').click()");await delay(750);await snap('desktop-zone');
   await evaluate("document.querySelector('#features').scrollIntoView({behavior:'instant'})");await snap('desktop-features');
   await evaluate("document.querySelector('#status-title').scrollIntoView({behavior:'instant'})");await snap('desktop-status');
   const loaded=await evaluate("Promise.all([...document.images].map(i=>{i.loading='eager';return i.decode().then(()=>true,()=>false)}))");

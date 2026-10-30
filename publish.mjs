@@ -4,9 +4,9 @@ import { cp, mkdir, readFile, rm } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 const FILES = [
-  'index.html', 'styles.css', 'app.js', 'copy.js', 'render.js', 'favicon.svg', 'JonaRu-Reimagined.jpeg',
+  'index.html', 'styles.css', 'app.js', 'copy.js', 'render.js', 'favicon.svg',
   'locales/en.js', 'locales/hi.js', 'locales/gu.js', 'locales/mr.js',
-  'assets/receipt.png', 'assets/udhaar.png', 'assets/invoice.png', 'assets/reports.png', 'assets/social-preview.png', 'assets/demo-qr.svg', 'assets/products/chataka-pataka.jpg', 'assets/products/poprings.jpg', 'assets/products/dairy-milk.jpg', 'assets/products/center-fruit.jpg', 'assets/products/kitkat.jpg', 'assets/products/oreo.jpg',
+  'assets/receipt.png', 'assets/udhaar.png', 'assets/invoice.png', 'assets/reports.png', 'assets/social-preview.png',  'assets/products/chataka-pataka.jpg', 'assets/products/poprings.jpg', 'assets/products/dairy-milk.jpg', 'assets/products/center-fruit.jpg', 'assets/products/kitkat.jpg', 'assets/products/oreo.jpg',
 ];
 
 await rm('dist', { recursive: true, force: true });

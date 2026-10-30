@@ -12,6 +12,7 @@ let selected = 5, crossed = false, demoMessage = 'ready';
 let paymentState = 'idle', paymentMethod = '', paymentTimer;
 const quantities = new Map();
 const trackedOnBill = new Set();
+const paidInZone = new Set();
 let played = false, playing = false, timers = [];
 
 function languageChange(code) {
@@ -28,7 +29,7 @@ function languageChange(code) {
   $$('[data-faq]').forEach(node=>{ node.open = openFaqs.has(node.dataset.faq); });
   // Never rebuild the form: values and the independently chosen contact language survive.
   $$('#pilot-form input, #pilot-form select, #pilot-form textarea').forEach(field=>field.setCustomValidity(''));
-  updateDemo(); updateFormStatus(); observeReveals();
+  updateDemo(); updateFormStatus(); updateStory();
 }
 
 function cancelSequence() {
@@ -49,6 +50,9 @@ function updateDemo() {
   $('#demo-pack').setAttribute('aria-pressed', String(crossed));
   $('#demo-add').disabled = crossed;
   $('#demo-back').disabled = !crossed;
+  $('#zone-reminder').hidden = !paidInZone.size;
+  $('#counter-scene').classList.toggle('has-item', crossed);
+  $('#counter-scene').classList.toggle('has-paid', paidInZone.has(selected));
   const rows = [...quantities].filter(([,qty])=>qty>0);
   $('#bill-rows').innerHTML = rows.length ? rows.map(([id,qty]) => `<div class="bill-row"><span>${escape(id===6?t('manualItem'):products[id])}<small>× ${qty}</small></span><strong>₹${qty*10}</strong><button type="button" data-remove="${id}" aria-label="${escape(t('remove'))}: ${escape(id===6?t('manualItem'):products[id])}">−</button></div>`).join('') : `<p class="empty-bill">${escape(t('empty'))}</p>`;
   $('#demo-total').textContent = `₹${rows.reduce((sum,[,qty])=>sum+qty*10,0)}`;
@@ -58,20 +62,22 @@ function updateDemo() {
 }
 function move(toBill, automatic = false) {
   if (!automatic) { cancelSequence(); played = true; }
+  if (paymentState === 'paid') { resetPayment(); quantities.clear(); }
   if (toBill !== crossed) {
-    if (toBill) trackedOnBill.add(selected); else trackedOnBill.delete(selected);
-    quantities.set(selected, Math.max(0,(quantities.get(selected)||0)+(toBill?1:-1)));
-    crossed = toBill; resetPayment(); demoMessage = toBill?'added':'removed';
-  }
+    const wasPaid = paidInZone.has(selected);
+    if (toBill) trackedOnBill.add(selected); else { trackedOnBill.delete(selected); paidInZone.delete(selected); }
+    if (!wasPaid) quantities.set(selected, Math.max(0,(quantities.get(selected)||0)+(toBill?1:-1)));
+    crossed = toBill; resetPayment(); demoMessage = wasPaid ? 'removed' : toBill ? 'added' : 'removed';
+  } else if (paidInZone.has(selected)) demoMessage = 'paidStill';
   $('#demo-pack').classList.toggle('is-recognised', toBill);
   updateDemo();
 }
 function finalFrame() {
-  cancelSequence(); quantities.clear(); trackedOnBill.clear(); crossed = false; resetPayment();
+  cancelSequence(); quantities.clear(); trackedOnBill.clear(); paidInZone.clear(); crossed = false; resetPayment();
   move(true,true); played = true;
 }
 function replay() {
-  cancelSequence(); played = true; crossed = false; resetPayment(); quantities.clear(); trackedOnBill.clear();
+  cancelSequence(); played = true; crossed = false; resetPayment(); quantities.clear(); trackedOnBill.clear(); paidInZone.clear();
   $('#manual-panel').hidden = true; $('#demo-pack').classList.remove('is-recognised');
   demoMessage = 'ready'; updateDemo();
   if (reduced.matches || document.hidden) { finalFrame(); return; }
@@ -98,8 +104,9 @@ $('#bill-rows').addEventListener('click',event=>{
   ($(`[data-remove="${id}"]`) || $('#demo-add')).focus({preventScroll:true});
 });
 $('#demo-manual').addEventListener('click',()=>{cancelSequence(); played=true; $('#manual-panel').hidden=false; $('#manual-add').focus({preventScroll:true});});
-$('#manual-add').addEventListener('click',()=>{quantities.set(6,(quantities.get(6)||0)+1); resetPayment(); demoMessage='manualAdded';updateDemo();});
+$('#manual-add').addEventListener('click',()=>{resetPayment(); quantities.set(6,(quantities.get(6)||0)+1); demoMessage='manualAdded';updateDemo();});
 function resetPayment() {
+  if (paymentState === 'paid') quantities.clear();
   clearTimeout(paymentTimer); paymentState = 'idle'; paymentMethod = '';
   $('#demo-payment').classList.remove('is-leaving');
 }
@@ -111,52 +118,50 @@ function updatePayment() {
   }
   $('#demo-payment').hidden = paymentState === 'idle';
   $('#payment-choices').hidden = paymentState !== 'choose';
-  $('#payment-qr').hidden = paymentState !== 'upi';
   $('#payment-success').hidden = paymentState !== 'paid';
-  $('#payment-method').textContent = paymentMethod ? t(paymentMethod === 'cash' ? 'cashReceived' : 'upiReceived') : '';
+  $('#payment-method').textContent = paymentMethod ? t(paymentMethod === 'cash' ? 'cashReceived' : paymentMethod === 'credit' ? 'creditReceived' : 'upiReceived') : '';
 }
 function receivePayment(method) {
-  const focusPayment = $('#demo-payment').contains(document.activeElement);
   clearTimeout(paymentTimer); paymentMethod = method; paymentState = 'paid';
-  demoMessage = 'paymentReceived'; updateDemo();
-  if (focusPayment) $('#payment-success').focus({preventScroll:true});
-  paymentTimer = setTimeout(()=>{
-    $('#demo-payment').classList.add('is-leaving');
-    paymentTimer = setTimeout(()=>{
-      const restoreFocus = $('#demo-payment').contains(document.activeElement);
-      resetPayment(); updateDemo();
-      if (restoreFocus) $('#demo-make-bill').focus({preventScroll:true});
-    }, reduced.matches ? 0 : 250);
-  }, 2000);
+  for (const id of trackedOnBill) paidInZone.add(id);
+  demoMessage = paidInZone.size ? 'clearPaid' : 'paymentReceived';
+  updateDemo(); $('#payment-success').focus({preventScroll:true});
 }
+$('#new-bill').addEventListener('click',()=>{
+  resetPayment(); quantities.clear(); demoMessage = paidInZone.size ? 'clearPaid' : 'ready';
+  updateDemo(); $('#demo-select').focus({preventScroll:true});
+});
 $('#demo-make-bill').addEventListener('click',()=>{
   if (![...quantities.values()].some(qty=>qty>0)) return;
   cancelSequence(); played = true; resetPayment(); paymentState = 'choose';
   demoMessage = 'choosePayment'; updateDemo(); $('#pay-cash').focus({preventScroll:true});
 });
 $('#pay-cash').addEventListener('click',()=>{if(paymentState === 'choose')receivePayment('cash');});
-$('#pay-upi').addEventListener('click',()=>{
-  if(paymentState !== 'choose')return;
-  paymentState = 'upi'; demoMessage = 'qrWait'; updateDemo(); $('#payment-qr').focus({preventScroll:true});
-  paymentTimer = setTimeout(()=>{if(paymentState === 'upi')receivePayment('upi');},3000);
-});
+$('#pay-upi').addEventListener('click',()=>{if(paymentState==='choose')receivePayment('upi');});
+$('#pay-credit').addEventListener('click',()=>{if(paymentState==='choose')receivePayment('credit');});
 
 let drag = null, suppressClickUntil = 0;
 const pack = $('#demo-pack'), scene = $('#counter-scene');
 pack.addEventListener('pointerdown',event=>{
   if(event.button!==0)return;
   cancelSequence(); played=true; const box=scene.getBoundingClientRect();
-  drag={id:event.pointerId,startX:event.clientX,box,last:event.clientX,moved:false};
+  drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,box,last:event.clientX,lastY:event.clientY,moved:false};
   pack.setPointerCapture(event.pointerId); pack.classList.add('is-dragging');
 });
 pack.addEventListener('pointermove',event=>{
   if(!drag || event.pointerId!==drag.id)return;
-  drag.last=event.clientX; drag.moved ||= Math.abs(event.clientX-drag.startX)>5;
-  if(drag.moved){const x=Math.max(pack.offsetWidth/2+3,Math.min(drag.box.width-pack.offsetWidth/2-3,event.clientX-drag.box.left));pack.style.transform=`translate(calc(-50% + ${x-drag.box.width*.72}px),-50%)`;}
+  drag.last=event.clientX; drag.lastY=event.clientY;
+  drag.moved ||= Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>5;
+  if(drag.moved){
+    const x=Math.max(pack.offsetWidth/2+3,Math.min(drag.box.width-pack.offsetWidth/2-3,event.clientX-drag.box.left));
+    const y=Math.max(pack.offsetHeight/2+3,Math.min(drag.box.height-pack.offsetHeight/2-3,event.clientY-drag.box.top));
+    pack.style.transform=`translate(calc(-50% + ${x-drag.box.width*.82}px),calc(-50% + ${y-drag.box.height*.51}px))`;
+  }
 });
 pack.addEventListener('pointerup',event=>{
   if(!drag || event.pointerId!==drag.id)return;
-  const wasDragged=drag.moved, toBill=(drag.last-drag.box.left)/drag.box.width<.30;
+  const zone=$('.scan-zone').getBoundingClientRect();
+  const wasDragged=drag.moved, toBill=drag.last>=zone.left && drag.last<=zone.right && drag.lastY>=zone.top && drag.lastY<=zone.bottom;
   drag=null; pack.classList.remove('is-dragging'); pack.style.transform='';
   if(wasDragged){suppressClickUntil=Date.now()+400;move(toBill);}
 });
@@ -181,14 +186,15 @@ mobileNav.addEventListener('click',event=>{if(event.target.closest('a'))closeMen
 document.addEventListener('keydown',event=>{if(event.key==='Escape' && !mobileNav.hidden){closeMenu();menuToggle.focus();}});
 document.addEventListener('keydown',event=>{
   if(event.key==='Escape' && paymentState!=='idle'){
-    resetPayment();demoMessage='ready';updateDemo();$('#demo-make-bill').focus({preventScroll:true});
+    if(paymentState==='paid')quantities.clear();
+    resetPayment();demoMessage=paidInZone.size?'clearPaid':'ready';updateDemo();$('#demo-select').focus({preventScroll:true});
   }
 });
 document.addEventListener('click',event=>{if(!event.target.closest('.site-header'))closeMenu();});
 window.addEventListener('resize',()=>{if(getComputedStyle(menuToggle).display==='none')closeMenu();},{passive:true});
 let scrollQueued=false;
 function updateScroll(){
-  pack.style.setProperty('--travel',`${scene.clientWidth*.54}px`);
+  pack.style.setProperty('--travel',`${scene.clientWidth*.47}px`);
   const max=document.documentElement.scrollHeight-innerHeight;
   $('.scroll-progress').style.transform=`scaleX(${max>0?Math.min(1,scrollY/max):0})`;
   const hero=$('#hero').getBoundingClientRect(), form=$('#book-pilot').getBoundingClientRect();
@@ -200,14 +206,6 @@ function updateScroll(){
 function queueScroll(){if(!scrollQueued){scrollQueued=true;requestAnimationFrame(updateScroll);}}
 window.addEventListener('scroll',queueScroll,{passive:true});window.addEventListener('resize',queueScroll,{passive:true});
 document.addEventListener('focusin',queueScroll);document.addEventListener('focusout',queueScroll);window.visualViewport?.addEventListener('resize',queueScroll);
-let revealObserver;
-function observeReveals(){
-  if(reduced.matches || !('IntersectionObserver' in window))return;
-  revealObserver?.disconnect();
-  revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('reveal');revealObserver.unobserve(entry.target);}}),{threshold:.08});
-  $$('.section-heading, .problem-grid article, .status-card').forEach(el=>revealObserver.observe(el));
-}
-
 const form=$('#pilot-form'), status=$('#form-status'), submitButton=$('.form-submit');
 function updateFormStatus(){
   status.hidden=!formState;status.textContent=formState?t(formState):'';
@@ -250,6 +248,15 @@ form.addEventListener('submit',async event=>{
   finally{clearTimeout(timeout);sending=false;$('#form-fallback').hidden=formState==='formSuccess';updateFormStatus();status.focus({preventScroll:true});}
 });
 window.addEventListener('pageshow',()=>{sending=false;updateFormStatus();});
+
+let storyStage = 0;
+function updateStory() {
+  $('#hero-story').dataset.stage = String(storyStage);
+  const key = ['heroPlaceText','heroReviewText','heroClearText'][storyStage];
+  $('#story-caption').dataset.i18n=key; $('#story-caption').textContent=t(key);
+  $$('[data-story]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.story)===storyStage)));
+}
+$$('[data-story]').forEach(button=>button.addEventListener('click',()=>{storyStage=Number(button.dataset.story);updateStory();}));
 
 // Every new load starts in English. No localStorage, browser-language detection or contact-language inference.
 $('#language').disabled=false;menuToggle.hidden=false;
